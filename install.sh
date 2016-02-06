@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
-wget https://github.com/Mte90/GH-License/blob/master/gh-license.py /usr/local/bin/gh-license
+wget https://raw.githubusercontent.com/Mte90/GH-License/master/gh-license.py /usr/local/bin/gh-license
+chmod +x /usr/local/bin/gh-license
 
 pip3 install pygithub
 
