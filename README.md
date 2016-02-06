@@ -5,4 +5,4 @@ This script scan every repo of the user on GitHub for a license file or download
 Remember without a license file your project is proprietary also if on GitHub!
 
 
-    curl -sL https://raw.githubusercontent.com/Mte90/GH-License/master/gh-license.py | bash -
+    curl -sL https://raw.githubusercontent.com/Mte90/GH-License/master/install.sh | bash -
