@@ -1,7 +1,7 @@
 #GitHub License
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)   
 
-This script scan every repo of the user on GitHub for a license file or download a license in the folder.  
+This script scan every repo of the user on GitHub for a license file or download a license (and add a license badge in the readme) in the folder.  
 
 Remember without a license file your project is proprietary also if on GitHub!
 
