@@ -3,6 +3,7 @@
 import sys
 import urllib.request
 import argparse
+import os.path
 from github import Github
 
 parser = argparse.ArgumentParser()
@@ -11,9 +12,24 @@ parser.add_argument("--license", help="Download a license file", action="store_t
 parser.add_argument('args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
-def downloadLicense(url, name):
-    urllib.request.urlretrieve(url, "LICENSE")
-    print('License ' + name + ' downloaded with filename LICENSE.')
+def downloadLicense(url, name, badge):
+    if not os.path.isfile("LICENSE"):
+        urllib.request.urlretrieve(url, "LICENSE")
+        print('License ' + name + ' downloaded with filename LICENSE.')
+        
+    readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
+    for readme_file in readme_files:
+        if os.path.isfile(readme_file):
+            f = open(readme_file, 'r+')
+            text = [i for i in f.readlines()]
+            f.seek(0)
+            if text[0][0] == '#':
+               f.write(text[0]) 
+               text.pop(0)
+            f.write('[![License]' + badge + "   \n")
+            f.write("".join(text))
+            f.close()
+            print('Added badge license for ' + name + ' in ' + readme_file + '.')
 
 if args.scan:
     if len(args.args) < 1:
@@ -50,19 +66,19 @@ elif args.license:
          sys.exit(1)
 
     if args.args[0] == 'GPLv2':
-        downloadLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.args[0])
+        downloadLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.args[0], '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
     elif args.args[0] == 'GPLv3':
-        downloadLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.args[0])
+        downloadLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.args[0], '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
     elif args.args[0] == 'LGPLv3':
-        downloadLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", args.args[0])
+        downloadLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", args.args[0], '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
     elif args.args[0] == 'AGPLv3':
-        downloadLicense("http://www.gnu.org/licenses/agpl-3.0.txt", args.args[0])
+        downloadLicense("http://www.gnu.org/licenses/agpl-3.0.txt", args.args[0], '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
     elif args.args[0] == 'FDLv1.3':
-        downloadLicense("http://www.gnu.org/licenses/fdl-1.3.txt", args.args[0])
+        downloadLicense("http://www.gnu.org/licenses/fdl-1.3.txt", args.args[0], '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
     elif args.args[0] == 'Apachev2':
-        downloadLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.args[0])
+        downloadLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.args[0], '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
     elif args.args[0] == 'CC-BY':
-        downloadLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.args[0])
+        downloadLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.args[0], '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
     else:
         print('License not found!')
 else:
