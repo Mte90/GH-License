@@ -62,7 +62,7 @@ if args.scan:
                 print(' ☐ Is a fork, check the original or create a PR!')
 elif args.license:
     if len(args.args) < 1:
-         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MOZILLA-PUBLIC-LICENSEv2, UNLICENSE, MIT\n')
+         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MPLv2, UNLICENSE, MIT\n')
          sys.exit(1)
 
     if args.args[0] == 'GPLv2':
@@ -85,7 +85,7 @@ elif args.license:
         downloadLicense("https://spdx.org/licenses/BSD-3-Clause.txt", args.args[0], '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
     elif args.args[0] == 'BSDv4':
         downloadLicense("https://spdx.org/licenses/BSD-4-Clause.txt", args.args[0], '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
-    elif args.args[0] == 'MOZILLA-PUBLIC-LICENSEv2':
+    elif args.args[0] == 'MPLv2':
         downloadLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", args.args[0], '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
     elif args.args[0] == 'UNLICENSE':
         downloadLicense("http://unlicense.org/UNLICENSE", args.args[0], '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
