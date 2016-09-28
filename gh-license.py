@@ -16,16 +16,16 @@ def downloadLicense(url, name, badge):
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
         print('License ' + name + ' downloaded with filename LICENSE.')
-        
+
     readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
     for readme_file in readme_files:
         if os.path.isfile(readme_file):
             f = open(readme_file, 'r+')
             text = [i for i in f.readlines()]
             f.seek(0)
-            if text[0][0] == '#':
-               f.write(text[0]) 
-               text.pop(0)
+            if len(text) > 0 and text[0][0] == '#':
+                f.write(text[0])
+                text.pop(0)
             f.write('[![License]' + badge + "   \n")
             f.write("".join(text))
             f.close()
