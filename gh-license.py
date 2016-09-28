@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import time
 import urllib.request
 import argparse
 import os.path
@@ -38,12 +39,13 @@ if args.scan:
 
     g = Github()
     user = g.get_user(args.args[0])
-
+    report_file = open("scan_report",'w')
+    report_file.write("Last scan done on: "+time.strftime("%c")+" \n \n")
     for repo in user.get_repos():
         print(repo.full_name)
-
         license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
         license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
+        repo_url = 'http://github.com/' + repo.full_name
         for license_file in license_files:
             missing = True
             try:
@@ -53,13 +55,21 @@ if args.scan:
                     missing = True
             else:
                 print(' ✓ Found: ' + license_url + license_file)
+                report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
+                report_file.write(' ✓ Found: ' + license_url + license_file + " \n")
                 missing = False
                 break
 
         if missing:
             print(' ✗ Missing the license, this repo is proprietary!')
+            report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
+            report_file.write(' ✗ Missing the license, this repo is proprietary!\n')
             if repo.fork:
                 print(' ☐ Is a fork, check the original or create a PR!')
+                report_file.write(' ☐ Is a fork, check the original or create a PR!\n')
+        report_file.write("\n")
+    report_file.close()
+
 elif args.license:
     if len(args.args) < 1:
          sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY\n')
