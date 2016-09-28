@@ -100,6 +100,10 @@ elif args.license:
         print('License not found!')
     if (len(args.args) > 1 and os.path.isdir(".git") and os.path.exists("LICENSE")):
         os.system("git add LICENSE")
+        readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
+        for readme_file in readme_files:
+            if os.path.isfile(readme_file):
+                os.system("git add "+readme_file)
         os.system("git commit -m 'missing license'")
         os.system("git push " + args.args[1] + " master")
 else:
