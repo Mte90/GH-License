@@ -55,6 +55,9 @@ if args.scan:
         report_file = open(args.args[1],'w')
     report_file.write('Last scan done on: ' + time.strftime("%c") + "\n")
     report_file.write('Scan report of user: ' + args.args[0] + "\n\n")
+    count_license = 0
+    count_no_license = 0
+    count_forked = 0
     for repo in user.get_repos():
         print(repo.full_name)
         license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
@@ -72,16 +75,24 @@ if args.scan:
                 report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
                 report_file.write(' ✓ Found: ' + license_url + license_file + " \n")
                 missing = False
+                count_license+=1
                 break
 
         if missing:
             print(' ✗ Missing the license, this repo is proprietary!')
             report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
             report_file.write(' ✗ Missing the license, this repo is proprietary!\n')
+            count_no_license+=1
             if repo.fork:
                 print(' ☐ Is a fork, check the original or create a PR!')
                 report_file.write(' ☐ Is a fork, check the original or create a PR!\n')
+                count_forked+=1
         report_file.write("\n")
+    report_file.write("Statistics: \n")
+    report_file.write("Repos with License: " + str(count_license) + "\n")
+    report_file.write("Repos without License: " + str(count_no_license) + "\n")
+    report_file.write("Repos without License and forked: " + str(count_forked) + "\n")
+    report_file.write("Total Repos: " + str(count_no_license + count_license) + "\n")
     report_file.close()
 
 elif args.license:

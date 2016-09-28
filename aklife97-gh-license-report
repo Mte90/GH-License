@@ -1,0 +1,25 @@
+Last scan done on: Wed Sep 28 23:17:27 2016
+Scan report of user: aklife97
+
+Repo: aklife97/aklife97.github.io
+URL: http://github.com/aklife97/aklife97.github.io 
+ ✓ Found: http://github.com/aklife97/aklife97.github.io/blob/master/LICENSE 
+
+Repo: aklife97/GH-License
+URL: http://github.com/aklife97/GH-License 
+ ✓ Found: http://github.com/aklife97/GH-License/blob/master/LICENSE 
+
+Repo: aklife97/py-vlcclient
+URL: http://github.com/aklife97/py-vlcclient 
+ ✗ Missing the license, this repo is proprietary!
+ ☐ Is a fork, check the original or create a PR!
+
+Repo: aklife97/SM-Webiste
+URL: http://github.com/aklife97/SM-Webiste 
+ ✗ Missing the license, this repo is proprietary!
+
+Statistics: 
+Repos with License: 2
+Repos without License: 2
+Repos without License and forked: 1
+Total Repos: 4
