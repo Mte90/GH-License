@@ -4,7 +4,7 @@ import sys
 import time
 import urllib.request
 import argparse
-import os.path
+import os
 from github import Github
 
 parser = argparse.ArgumentParser()
@@ -32,6 +32,18 @@ def downloadLicense(url, name, badge):
             f.close()
             print('Added badge license for ' + name + ' in ' + readme_file + '.')
 
+    if os.path.isdir('.git') and os.path.exists('LICENSE'):
+        os.system('git add LICENSE')
+        readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
+        for readme_file in readme_files:
+            if os.path.isfile(readme_file):
+                os.system('git add ' + readme_file)
+        os.system("git commit -m 'missing LICENSE'")
+        if len(args.args) > 1: 
+            os.system('git push ' + args.args[1] + ' master')
+        else:
+            os.system('git push origin master')
+
 if args.scan:
     if len(args.args) < 1:
          sys.stderr.write('  First parameter is missing: the nick on GitHub\n')
@@ -41,12 +53,12 @@ if args.scan:
     g = Github()
     user = g.get_user(args.args[0])
     if len(args.args) < 2:
-        report_file = open(args.args[0] + "-gh-license-report",'w')
+        report_file = open(args.args[0] + '-gh-license-report','w')
         print(' No report file name found, using default "'+ args.args[0] + '-gh-license-report" instead!')
     else:
         report_file = open(args.args[1],'w')
-    report_file.write("Last scan done on: " + time.strftime("%c") + " \n")
-    report_file.write("Scan report of user: " + args.args[0] + "\n \n")
+    report_file.write('Last scan done on: ' + time.strftime("%c") + "\n")
+    report_file.write('Scan report of user: ' + args.args[0] + "\n\n")
     for repo in user.get_repos():
         print(repo.full_name)
         license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
@@ -110,17 +122,9 @@ elif args.license:
         downloadLicense("https://spdx.org/licenses/MIT.txt", args.args[0], '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
     else:
         print('License not found!')
-    if (len(args.args) > 1 and os.path.isdir(".git") and os.path.exists("LICENSE")):
-        os.system("git add LICENSE")
-        readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
-        for readme_file in readme_files:
-            if os.path.isfile(readme_file):
-                os.system("git add "+readme_file)
-        os.system("git commit -m 'missing license'")
-        os.system("git push " + args.args[1] + " master")
 else:
     print('  Remember without a license file your project is proprietary!')
-    print('  GitHub License checker and downloader by Mte90')
+    print('  GitHub License checker and downloader')
     print('')
     print('  This script scan every repo of the user for a license file or')
     print('  download a license, choose on http://choosealicense.com/licenses/')
