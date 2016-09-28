@@ -15,6 +15,10 @@ Remember without a license file your project is proprietary also if on GitHub!
 
     gh-license --scan Mte90 
 
-Example of output https://gist.github.com/Mte90/4c5ec76c94afa61983f8
+With this command you will get a report in a file Mte90-gh-license-report
 
-    gh-license --license GPLv3 && git add LICENSE && git commit -m "missing license" && git push origin master
+    gh-license --license GPLv3
+
+With this command will be downlaoded the license GPLv3, added a shields in the readme and if Git is avialable add a commit and pushed to the repo.
+
+Example of output https://gist.github.com/Mte90/4c5ec76c94afa61983f8
