@@ -62,7 +62,7 @@ if args.scan:
                 print(' ☐ Is a fork, check the original or create a PR!')
 elif args.license:
     if len(args.args) < 1:
-         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY\n')
+         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MOZILLA-PUBLIC-LICENSEv2, UNLICENSE, MIT\n')
          sys.exit(1)
 
     if args.args[0] == 'GPLv2':
@@ -79,6 +79,18 @@ elif args.license:
         downloadLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.args[0], '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
     elif args.args[0] == 'CC-BY':
         downloadLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.args[0], '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
+    elif args.args[0] == 'BSDv2':
+        downloadLicense("https://spdx.org/licenses/BSD-2-Clause.txt", args.args[0], '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
+    elif args.args[0] == 'BSDv3':
+        downloadLicense("https://spdx.org/licenses/BSD-3-Clause.txt", args.args[0], '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
+    elif args.args[0] == 'BSDv4':
+        downloadLicense("https://spdx.org/licenses/BSD-4-Clause.txt", args.args[0], '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
+    elif args.args[0] == 'MOZILLA-PUBLIC-LICENSEv2':
+        downloadLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", args.args[0], '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
+    elif args.args[0] == 'UNLICENSE':
+        downloadLicense("http://unlicense.org/UNLICENSE", args.args[0], '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
+    elif args.args[0] == 'MIT':
+        downloadLicense("https://spdx.org/licenses/MIT.txt", args.args[0], '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
     else:
         print('License not found!')
 else:
