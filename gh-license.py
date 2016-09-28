@@ -9,7 +9,7 @@ from github import Github
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick] [Report_file_name (optional)]", action="store_true")
-parser.add_argument("--license", help="Download a license file", action="store_true")
+parser.add_argument("--license", help="Download a license file, arguments: [License_name] [Git_remote_name (optional)]", action="store_true")
 parser.add_argument('args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
@@ -79,6 +79,7 @@ if args.scan:
 elif args.license:
     if len(args.args) < 1:
          sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MPLv2, UNLICENSE, MIT\n')
+         sys.stderr.write('  Second optional parameter: The license: git remote name (this would automatically push LICENSE to master)\n')
          sys.exit(1)
 
     if args.args[0] == 'GPLv2':
@@ -109,6 +110,14 @@ elif args.license:
         downloadLicense("https://spdx.org/licenses/MIT.txt", args.args[0], '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
     else:
         print('License not found!')
+    if (len(args.args) > 1 and os.path.isdir(".git") and os.path.exists("LICENSE")):
+        os.system("git add LICENSE")
+        readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
+        for readme_file in readme_files:
+            if os.path.isfile(readme_file):
+                os.system("git add "+readme_file)
+        os.system("git commit -m 'missing license'")
+        os.system("git push " + args.args[1] + " master")
 else:
     print('  Remember without a license file your project is proprietary!')
     print('  GitHub License checker and downloader by Mte90')
