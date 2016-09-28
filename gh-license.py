@@ -35,12 +35,18 @@ def downloadLicense(url, name, badge):
 if args.scan:
     if len(args.args) < 1:
          sys.stderr.write('  First parameter is missing: the nick on GitHub\n')
+         sys.stderr.write('  Second optional parameter: name of report file\n')
          sys.exit(1)
 
     g = Github()
     user = g.get_user(args.args[0])
-    report_file = open("scan_report",'w')
-    report_file.write("Last scan done on: "+time.strftime("%c")+" \n \n")
+    if len(args.args) < 2:
+        report_file = open(args.args[0] + "-gh-license-report",'w')
+        print(' No report file name found, using default "'+ args.args[0] + '-gh-license-report" instead!')
+    else:
+        report_file = open(args.args[1],'w')
+    report_file.write("Last scan done on: " + time.strftime("%c") + " \n")
+    report_file.write("Scan report of user: " + args.args[0] + "\n \n")
     for repo in user.get_repos():
         print(repo.full_name)
         license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
