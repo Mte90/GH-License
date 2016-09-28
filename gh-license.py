@@ -8,7 +8,7 @@ import os.path
 from github import Github
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--scan", help="Scan repo of the user", action="store_true")
+parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick] [Report_file_name (optional)]", action="store_true")
 parser.add_argument("--license", help="Download a license file", action="store_true")
 parser.add_argument('args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
