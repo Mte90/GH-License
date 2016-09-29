@@ -97,7 +97,43 @@ if args.scan:
 
 elif args.license:
     if len(args.args) < 1:
-         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MPLv2, UNLICENSE, MIT\n')
+         sys.stderr.write('  First parameter is missing: The license:'\
+         '\n  GPLv2\n'\
+         '\tYou may copy, distribute and modify the software.\n'\
+         '\tAny modifications must also be made available under\n'\
+         '\tthe GPL along with build & install instructions.'\
+         '\n\n  GPLv3\n'\
+         '\tSame of GPLv2 but easily integrable with other license.'\
+         '\n\n  LGPLv3\n'\
+         '\tThis license is mainly applied to libraries.\n'\
+         '\tDerivatives works that use LGPL library can use other license.'\
+         '\n\n  AGPLv3\n'\
+         '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
+         '\tbuilt for network software, the AGPL is the GPL of the web.'\
+         '\n\n  FDLv1.3\n'\
+         '\tThis License is for a manual, textbook, or other\n'\
+         '\tfunctional and useful document "free" in the sense of freedom.'\
+         '\n\n  Apachev2\n'\
+         '\tYou can do what you like with the software, as long as you include the\n'\
+         '\trequired notices.'\
+         '\n\n  CC-BY\n'\
+         '\tThis is the ‘standard’ creative commons.\n'\
+         '\tIt should not be used for the software.'\
+         '\n\n  BSDv2\n'\
+         '\tThe BSD 2-clause license allows you almost unlimited freedom.'
+         '\n\n  BSDv3\n'\
+         '\tThe BSD 3-clause license allows you almost unlimited freedom.'
+         '\n\n  BSDv4\n'\
+         '\tThe BSD 4-clause license is a permissive license with a special \n'\
+         '\tobligation to credit the copyright holders of the software.'\
+         '\n\n  MPLv2\n'\
+         '\tMPL is a copyleft license. You must make the source code for any\n'\
+         '\tof your changes available under MPL, but you can combine the\n'\
+         '\tMPL software with proprietary code.'\
+         '\n\n  UNLICENSE\n'\
+         '\tReleases code into the public domain.'\
+         '\n\n  MIT\n'\
+         '\tA short, permissive software license.\n\n')
          sys.stderr.write('  Second optional parameter: The license: git remote name (this would automatically push LICENSE to master)\n')
          sys.exit(1)
 
