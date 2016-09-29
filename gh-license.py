@@ -97,7 +97,92 @@ if args.scan:
 
 elif args.license:
     if len(args.args) < 1:
-         sys.stderr.write('  First parameter is missing: The license: GPLv2, GPLv3, LGPLv3, AGPLv3, FDLv1.3, Apachev2, CC-BY, BSDv2, BSDv3, BSDv4, MPLv2, UNLICENSE, MIT\n')
+         sys.stderr.write('  First parameter is missing: The license:'\
+         '\n GPLv2\n'\
+         '\tYou may copy, distribute and modify the software as long as you track\n'\
+         '\tchanges/dates in source files. Any modifications to or software\n'\
+         '\tincluding(via compiler) GPL-licensed code must also be made\n'\
+         '\tavailable under the GPL along with build & install instructions.'\
+         
+         '\n\n GPLv3\n'\
+         '\tYou may copy, distribute and modify the software as long as you track\n'\
+         '\tchanges/dates in source files. Any modifications to or software\n'\
+         '\tincluding (via compiler) GPL-licensed code must also be made\n'\
+         '\tavailable under the GPL along with build & install instructions.'\
+         
+         '\n\n LGPLv3\n'\
+         '\tThis license is mainly applied to libraries. You may copy, distribute\n'\
+         '\tand modify the software provided that modifications are described and\n'\
+         '\tlicensed for free under LGPL. Derivatives works (including\n'\
+         '\tmodifications or anything statically linked to the library)\n'\
+         '\tcan only be redistributed under LGPL, but applications that use\n'\
+         '\tthe library don\'t have to be.'\
+         
+         '\n\n AGPLv3\n'\
+         '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
+         '\tbuilt for network software. You can distribute modified versions if\n'\
+         '\tyou keep track of the changes and the date you made them. As per\n'\
+         '\tusual with GNU licenses, you must license derivatives under AGPL.\n'\
+         '\tIt provides the same restrictions and freedoms as the GPLv3 but with an\n'\
+         '\tadditional clause which makes it so that source code must be distributed\n'\
+         '\talong with web publication. Since web sites and services are never\n'\
+         '\tdistributed in the traditional sense, the AGPL is the GPL of the web.'\
+         
+         '\n\n FDLv1.3\n'\
+         '\tThe purpose of this License is to make a manual, textbook, or other\n'\
+         '\tfunctional and useful document "free" in the sense of freedom: to\n'\
+         '\tassure everyone the effective freedom to copy and redistribute it,\n'\
+         '\twith or without modifying it, either commercially or noncommercially.\n'\
+         '\tSecondarily, this License preserves for the author and publisher a way\n'\
+         '\tto get credit for their work, while not being considered responsible \n'\
+         '\tfor modifications made by others.'\
+         
+         '\n\n Apachev2\n'\
+         '\tYou can do what you like with the software, as long as you include the\n'\
+         '\trequired notices. This permissive license contains a patent license\n'\
+         '\tfrom the contributors of the code.'\
+         
+         '\n\n CC-BY\n'\
+         '\tThis is the ‘standard’ creative commons license that gives others\n'\
+         '\tmaximum freedom to do what they want with your work. You must give\n'\
+         '\tcredit to the original author of the work, state their name and the\n'\
+         '\ttitle of the original work, say that you modified the work if you\n'\
+         '\tdid and include the attribution logo, found on their website.\n'\
+         '\tDoesn’t allow for Tivoization and provides protection from\n'\
+         '\tdefamation for the creator.'\
+         
+         '\n\n BSDv2\n'\
+         '\tThe BSD 2-clause license allows you almost unlimited freedom with the\n'\
+         '\tsoftware so long as you include the BSD copyright notice in it.'\
+         
+         '\n\n BSDv3\n'\
+         '\tThe BSD 3-clause license allows you almost unlimited freedom with the\n'\
+         '\tsoftware so long as you include the BSD copyright and license\n'\
+         '\tnotice in it'\
+         
+         '\n\n BSDv4\n'\
+         '\tThe BSD 4-clause license is a permissive license with a special \n'\
+         '\tobligation to credit the copyright holders of the software.'\
+         
+         '\n\n MPLv2\n'\
+         '\tMPL is a copyleft license that is easy to comply with. You must make\n'\
+         '\tthe source code for any of your changes available under MPL, but you\n'\
+         '\tcan combine the MPL software with proprietary code, as long as you keep\n'\
+         '\tthe MPL code in separate files. Version 2.0 is, by default, compatible\n'\
+         '\twith LGPL and GPL version 2 or greater. You can distribute binaries\n'\
+         '\tunder a proprietary license, as long as you make the source available\n'\
+         '\tunder MPL.'\
+        
+         '\n\n UNLICENSE\n'\
+         '\tReleases code into the public domain, thereby releasing all rights\n'\
+         '\tyou may hold to that code.'\
+         
+         '\n\n MIT\n'\
+         '\tA short, permissive software license. Basically, you can do whatever\n'\
+         '\tyou want as long as you include the original copyright and license\n'\
+         '\tnotice in any copy of the software/source. There are many variations\n'\
+         '\tof this license in use.\n\n')
+         
          sys.stderr.write('  Second optional parameter: The license: git remote name (this would automatically push LICENSE to master)\n')
          sys.exit(1)
 
