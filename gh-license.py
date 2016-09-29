@@ -13,6 +13,22 @@ parser.add_argument("--license", help="Download a license file, arguments: [Lice
 parser.add_argument('args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
+def makeprint(x):
+    sys.stdout.write(" "*52)
+    sys.stdout.write("\r")
+    sys.stdout.flush()
+    print (x)
+
+def progressBar(current, total):
+    sys.stdout.write("|")
+    sys.stdout.write("#"*int(current*40/total))
+    sys.stdout.write("-"*(40-int(current*40/total)))
+    sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
+    sys.stdout.flush()
+    # sys.stdout.write(" "*52)
+    # sys.stdout.write("\r")
+    # time.sleep(0.1)
+
 def downloadLicense(url, name, badge):
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
@@ -55,6 +71,8 @@ if args.scan:
         report_file = open(args.args[1],'w')
     report_file.write('Last scan done on: ' + time.strftime("%c") + "\n")
     report_file.write('Scan report of user: ' + args.args[0] + "\n\n")
+    count_total = len(list(user.get_repos()))
+    count_current = 0
     count_license = 0
     count_no_license = 0
     count_forked = 0
@@ -63,6 +81,7 @@ if args.scan:
         license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
         license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
         repo_url = 'http://github.com/' + repo.full_name
+        progressBar(count_current, count_total)
         for license_file in license_files:
             missing = True
             try:
@@ -71,7 +90,7 @@ if args.scan:
                 if err.code == 404:
                     missing = True
             else:
-                print(' ✓ Found: ' + license_url + license_file)
+                makeprint(' ✓ Found: ' + license_url + license_file)
                 report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
                 report_file.write(' ✓ Found: ' + license_url + license_file + " \n")
                 missing = False
@@ -79,7 +98,7 @@ if args.scan:
                 break
 
         if missing:
-            print(' ✗ Missing the license, this repo is proprietary!')
+            makeprint(' ✗ Missing the license, this repo is proprietary!')
             report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
             report_file.write(' ✗ Missing the license, this repo is proprietary!\n')
             count_no_license+=1
@@ -87,7 +106,9 @@ if args.scan:
                 print(' ☐ Is a fork, check the original or create a PR!')
                 report_file.write(' ☐ Is a fork, check the original or create a PR!\n')
                 count_forked+=1
+        count_current+=1
         report_file.write("\n")
+    print ("|" + "#"*40 + "| Done 100%")
     report_file.write("Statistics: \n")
     report_file.write("Repos with License: " + str(count_license) + "\n")
     report_file.write("Repos without License: " + str(count_no_license) + "\n")
