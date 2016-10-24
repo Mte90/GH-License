@@ -8,7 +8,9 @@ Remember, without a license file your project is proprietary even if it is on Gi
 
 ##Install
 
-    curl -sL https://raw.githubusercontent.com/Mte90/GH-License/master/install.sh | bash -
+```
+pip install git+https://github.com/Mte90/GH-License.git
+```
 
 
 ##Example
