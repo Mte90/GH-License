@@ -9,7 +9,7 @@ Remember, without a license file your project is proprietary even if it is on Gi
 ##Install
 
 ```
-pip install git+https://github.com/Mte90/GH-License.git
+pip install gh-license
 ```
 
 
