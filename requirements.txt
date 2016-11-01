@@ -1,1 +1,4 @@
 pygithub>=1.5.0 
+bitbucket-api>=0.5.0
+# Not enabled yet, support isn't there:
+# python-gitlab>=0.16

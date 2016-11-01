@@ -1,1 +1,1 @@
-from ghlicense.providers import github
+from ghlicense.providers import github, bitbucket
