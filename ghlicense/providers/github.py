@@ -16,7 +16,9 @@ class GitHubProvider(repobase.Provider):
         g_repos = self.user.get_repos()
         repos = []
         for g_repo in g_repos:
-            repos.append(repobase.Repo(g_repo.full_name, g_repo.default_branch, g_repo.fork))
+            raw_base_url = 'http://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '/'
+            repo_url = 'http://github.com/' + g_repo.full_name
+            repos.append(repobase.Repo(g_repo.full_name, raw_base_url, repo_url, g_repo.default_branch, g_repo.fork))
         return repos
 
 repobase.register_provider("github", GitHubProvider, PROVIDER_PLUGIN_LOADED)

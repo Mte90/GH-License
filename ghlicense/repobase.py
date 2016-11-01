@@ -5,8 +5,10 @@ global providers
 providers = {}
 
 class Repo:
-    def __init__(self, full_name, default_branch = "master", fork = False):
+    def __init__(self, full_name, raw_base_url, repo_url, default_branch = "master", fork = False):
         self.full_name = full_name
+        self.raw_base_url = raw_base_url
+        self.repo_url = repo_url
         self.default_branch = default_branch
         self.fork = fork
 

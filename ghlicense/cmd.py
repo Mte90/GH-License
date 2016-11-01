@@ -95,9 +95,9 @@ def main():
         count_forked = 0
         for repo in user.get_repos():
             print(repo.full_name)
-            license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
+            license_url = repo.raw_base_url
             license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
-            repo_url = 'http://github.com/' + repo.full_name
+            repo_url = repo.repo_url
             progressBar(count_current, count_total)
             for license_file in license_files:
                 missing = True
