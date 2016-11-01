@@ -5,15 +5,29 @@ import time
 import urllib.request
 import argparse
 import os
-from github import Github
+from ghlicense import repobase
+from ghlicense import providers
 
-parser = argparse.ArgumentParser()
+enhanced_description = """
+This script scans every repo of the specified user for a license
+file. If a license can't be found, the script will upload a
+a specified license to your repo. Choose a license on
+http://choosealicense.com/licenses/ or use http://www.addalicense.com/.
+Remember, without a license file, your project is proprietary!
+"""
+
+enabled_providers, disabled_providers = repobase.get_providers()
+
+parser = argparse.ArgumentParser(description = "GitHub License checker and downloader",
+    epilog = enhanced_description)
+err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
+parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
+    (", ".join(enabled_providers), err_providers_txt), action="store", default = "github")
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick] [Report_file_name (optional)]", action="store_true")
 parser.add_argument("--license", help="Download a license file, arguments: [License_name] [Git_remote_name (optional)]", action="store_true")
 parser.add_argument('args', nargs=argparse.REMAINDER)
 
 args = parser.parse_args()
-
 
 def makeprint(x):
     sys.stdout.write(" "*52)
@@ -65,8 +79,8 @@ def main():
              sys.stderr.write('  Second optional parameter: name of report file\n')
              sys.exit(1)
 
-        g = Github()
-        user = g.get_user(args.args[0])
+        repo_provider = repobase.get_provider(args.provider)
+        user = repo_provider(args.args[0])
         if len(args.args) < 2:
             report_file = open(args.args[0] + '-gh-license-report','w')
             print(' No report file name found, using default "'+ args.args[0] + '-gh-license-report" instead!')
@@ -81,9 +95,9 @@ def main():
         count_forked = 0
         for repo in user.get_repos():
             print(repo.full_name)
-            license_url = 'http://github.com/' + repo.full_name + '/blob/' + repo.default_branch + '/'
+            license_url = repo.raw_base_url
             license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
-            repo_url = 'http://github.com/' + repo.full_name
+            repo_url = repo.repo_url
             progressBar(count_current, count_total)
             for license_file in license_files:
                 missing = True
@@ -190,15 +204,7 @@ def main():
         else:
             print('License not found!')
     else:
-        print('  Remember without a license file your project is proprietary!')
-        print('  GitHub License checker and downloader')
-        print('')
-        print('  This script scan every repo of the user for a license file or')
-        print('  download a license, choose on http://choosealicense.com/licenses/')
-        print('  or use http://www.addalicense.com/ to add automatically')
-        print('  on your GitHub repos')
-        print('')
-        print('Use --scan or --license command')
+        parser.error('No action requested, add --scan or --license')
 
 if __name__ == "__main__":
     main()
