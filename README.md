@@ -22,12 +22,22 @@ pip3 install -e ./folder-of-the-repo
 
     gh-license --scan Mte90
     
+With this command you will get a report in a file called Mte90-github-license-report
+    
     gh-license --scan Mte90 --provider bitbucket
 
-With this command you will get a report in a file called Mte90-gh-license-report
+With this command you will get a report in a file called Mte90-bitbucket-license-report
+
+    gh-license --scan Mte90 --report my-report
+
+With this command you will get a report in a file called my-report
 
     gh-license --license GPLv3
 
 With this command, a GPLv3 license will be downloaded, a shields will be added in the readme and if Git is available a commit will be added and the changes will be pushed to the repo.
 
+    gh-license --license GPLv3 -- origin upstream
+    
+With this command the commit will be pushed on the upstream origin
+    
 Example of output https://gist.github.com/Mte90/4c5ec76c94afa61983f8
