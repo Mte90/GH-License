@@ -5,21 +5,22 @@ import time
 import urllib.request
 import argparse
 import os
-from ghlicense import repobase
-from ghlicense import providers
+import repobase
+from argparse import RawTextHelpFormatter
 
 enhanced_description = """
 This script scans every repo of the specified user for a license
 file. If a license can't be found, the script will upload a
-a specified license to your repo. Choose a license on
-http://choosealicense.com/licenses/ or use http://www.addalicense.com/.
+a specified license to your repo.\n
+Choose a license on http://choosealicense.com/licenses/ or use 
+http://www.addalicense.com/.\n
 Remember, without a license file, your project is proprietary!
 """
 
 enabled_providers, disabled_providers = repobase.get_providers()
 
 parser = argparse.ArgumentParser(description = "GitHub License checker and downloader",
-    epilog = enhanced_description)
+    epilog = enhanced_description, formatter_class=RawTextHelpFormatter)
 err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
 parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
     (", ".join(enabled_providers), err_providers_txt), action="store", default = "github")
@@ -28,6 +29,9 @@ parser.add_argument("--license", help="Download a license file, arguments: [Lice
 parser.add_argument('args', nargs=argparse.REMAINDER)
 
 args = parser.parse_args()
+if len(sys.argv) < 2:
+    parser.print_help()
+    sys.exit(0)
 
 def makeprint(x):
     sys.stdout.write(" "*52)
@@ -41,9 +45,6 @@ def progressBar(current, total):
     sys.stdout.write("-"*(40-int(current*40/total)))
     sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
     sys.stdout.flush()
-    # sys.stdout.write(" "*52)
-    # sys.stdout.write("\r")
-    # time.sleep(0.1)
 
 def downloadLicense(url, name, badge):
     if not os.path.isfile("LICENSE"):
