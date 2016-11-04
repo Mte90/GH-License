@@ -1,4 +1,4 @@
-#GitHhosting License
+#GitHosting License
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)   
 
 This script scans every repo of a user on GitHub, Bitbucket or other providers available for a license file, downloads a license to the project folder, and adds a license badge in the readme of the project.
