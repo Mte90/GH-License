@@ -1,11 +1,12 @@
 #!/usr/bin/python3
-
+        
 import sys
 import time
 import urllib.request
 import argparse
 import os
-import repobase
+from ghlicense import repobase
+from ghlicense import providers
 from argparse import RawTextHelpFormatter
 
 enhanced_description = """
@@ -206,6 +207,10 @@ def main():
             print('License not found!')
     else:
         parser.error('No action requested, add --scan or --license')
+
+def include(filename):
+    if os.path.exists(filename): 
+        execfile(filename)        
 
 if __name__ == "__main__":
     main()

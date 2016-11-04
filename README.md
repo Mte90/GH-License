@@ -9,7 +9,13 @@ Remember, without a license file your project is proprietary even if it is on Gi
 ##Install
 
 ```
-pip install gh-license
+pip3 install gh-license
+```
+
+In case of a git clone:
+```
+pip3 install -r requirements.txt
+run.py
 ```
 
 
