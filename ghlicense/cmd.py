@@ -17,42 +17,43 @@ Choose a license on http://choosealicense.com/licenses/ or use
 http://www.addalicense.com/.\n
 Remember, without a license file, your project is proprietary!
 """
-
+# Load all the providers
 enabled_providers, disabled_providers = repobase.get_providers()
-
+# Set all the  argument
 parser = argparse.ArgumentParser(description = "GitHosting License checker and downloader",
     epilog = enhanced_description, formatter_class=RawTextHelpFormatter)
 err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
-parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick] [Report_file_name (optional)]", action="store")
-parser.add_argument("--license", help="Download a license file, arguments: [License_name] [Git_remote_name (optional)]", action="store")
+parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
+parser.add_argument("--license", help="Download a license file, arguments: [License_name]", action="store_true")
 parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
     (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
-parser.add_argument("--report", help="The report filename for scan", action="store")
+parser.add_argument("--report", help="The report filename for scan (optional)", action="store")
+parser.add_argument("--origin", help="The origin of the git repo (optional)", action="store")
 parser.add_argument('args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
-
+# In case of not parameter show the help
 if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(0)
-
+# Used to print with the progressbar support
 def makeprint(x):
     sys.stdout.write(" "*52)
     sys.stdout.write("\r")
     sys.stdout.flush()
     print (x)
-
+# Generate a progressbar of the status
 def progressBar(current, total):
     sys.stdout.write("|")
     sys.stdout.write("#"*int(current*40/total))
     sys.stdout.write("-"*(40-int(current*40/total)))
     sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
     sys.stdout.flush()
-
+# Download the license
 def downloadLicense(url, name, badge):
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
         print('License ' + name + ' downloaded with filename LICENSE.')
-
+    # Search for the readme
     readme_files = ['README.md','README.txt','readme','README','readme.txt','readme.md']
     for readme_file in readme_files:
         if os.path.isfile(readme_file):
@@ -66,22 +67,18 @@ def downloadLicense(url, name, badge):
             f.write("".join(text))
             f.close()
             print('Added badge license for ' + name + ' in ' + readme_file + '.')
+            # In case of git commit the file
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
                 os.system('git add ' + readme_file)
                 os.system("git commit -m 'missing LICENSE'")
-                if len(args.args) > 1:
-                    os.system('git push ' + args.args[1] + ' master')
+                if args.origin == None:
+                    os.system('git push ' + args.origin + ' master')
                 else:
                     os.system('git push origin master')
-
+# Execute the script
 def main():
     if args.scan:
-        if len(args.scan) < 1:
-             sys.stderr.write('  First parameter is missing: the nick on GitHub\n')
-             sys.stderr.write('  Second optional parameter: name of report file\n')
-             sys.exit(1)
-
         repo_provider = repobase.get_provider(args.provider)
         user = repo_provider(args.scan)
         if args.report == None:
@@ -137,22 +134,22 @@ def main():
         report_file.close()
 
     elif args.license:
-        if len(args.license) < 1:
+        if args.license == True:
              sys.stderr.write('  First parameter is missing: The license:'\
              '\n  GPLv2\n'\
              '\tYou may copy, distribute and modify the software.\n'\
              '\tAny modifications must also be made available under\n'\
              '\tthe GPL along with build & install instructions.'\
              '\n\n  GPLv3\n'\
-             '\tSame of GPLv2 but easily integrable with other license.'\
+             '\tSame of GPLv2 but easily integrable with other licenses.'\
              '\n\n  LGPLv3\n'\
              '\tThis license is mainly applied to libraries.\n'\
-             '\tDerivatives works that use LGPL library can use other license.'\
+             '\tDerivatives works that use LGPL library can use other licenses.'\
              '\n\n  AGPLv3\n'\
              '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
              '\tbuilt for network software, the AGPL is the GPL of the web.'\
              '\n\n  FDLv1.3\n'\
-             '\tThis License is for a manual, textbook, or other\n'\
+             '\tThis license is for a manual, textbook, or other\n'\
              '\tfunctional and useful document "free" in the sense of freedom.'\
              '\n\n  Apachev2\n'\
              '\tYou can do what you like with the software, as long as you include the\n'\
@@ -175,7 +172,6 @@ def main():
              '\tReleases code into the public domain.'\
              '\n\n  MIT\n'\
              '\tA short, permissive software license.\n\n')
-             sys.stderr.write('  Second optional parameter: The license: git remote name (this would automatically push LICENSE to master)\n')
              sys.exit(1)
 
         if args.scan == 'GPLv2':
@@ -205,9 +201,7 @@ def main():
         elif args.scan == 'MIT':
             downloadLicense("https://spdx.org/licenses/MIT.txt", args.scan, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
         else:
-            print('License not found!')
-    else:
-        parser.error('No action requested, add --scan or --license')      
+            print('License not found!')    
 
 if __name__ == "__main__":
     main()
