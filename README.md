@@ -35,6 +35,7 @@ With this command you will get a report in a file called my-report
     gh-license --licenselist
     
 With this command will be showed the licenses avalaible
+
     gh-license --license GPLv3
 
 With this command, a GPLv3 license will be downloaded, a shields will be added in the readme and if Git is available a commit will be added and the changes will be pushed to the repo.
