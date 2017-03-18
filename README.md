@@ -1,4 +1,4 @@
-#GitHosting License
+# GitHosting License
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6705b4282fd459da427e24649081510)](https://www.codacy.com/app/mte90net/GH-License?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Mte90/GH-License&amp;utm_campaign=Badge_Grade)  
 
 This script scans every repo of a user on GitHub, Bitbucket or other providers available for a license file, downloads a license to the project folder, and adds a license badge in the readme of the project.
@@ -6,19 +6,20 @@ This script scans every repo of a user on GitHub, Bitbucket or other providers a
 Remember, without a license file your project is proprietary even if it is on GitHub!
 
 
-##Install
+## Install
 
 ```
 pip3 install gh-license
 ```
 
 In case of a git clone:
+
 ```
 pip3 install -e ./folder-of-the-repo
 ```
 
 
-##Example
+## Example
 
     gh-license --scan Mte90
     
@@ -44,4 +45,4 @@ With this command, a GPLv3 license will be downloaded, a shields will be added i
     
 With this command the commit will be pushed on the upstream origin
     
-Example of output https://gist.github.com/Mte90/4c5ec76c94afa61983f8
+[Example of output](https://gist.github.com/Mte90/4c5ec76c94afa61983f8)
