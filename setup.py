@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from setuptools import setup, find_packages
+from setup.setup_hook import PostDevelopCommand
 
 import os
 
@@ -19,5 +20,8 @@ setup(
         'console_scripts': [
             'gh-license=ghlicense.cmd:main'
         ]
+    },
+    cmdclass={
+        'develop': PostDevelopCommand
     }
 )
