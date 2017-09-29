@@ -51,24 +51,23 @@ if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(0)
     
-# Used to print with the progressbar support
-def makeprint(x):
+def printLicenseStatus(x):
+    """Print License status messages with a progressbar."""
     sys.stdout.write(" "*52)
     sys.stdout.write("\r")
     sys.stdout.flush()
     print (x)
     
-# Generate a progressbar of the status
-def progressBar(current, total):
+def updateProgressBar(current, total):
+    """Display a progressbar using ASCII characters alongwith the status."""
     sys.stdout.write("|")
     sys.stdout.write("#"*int(current*40/total))
     sys.stdout.write("-"*(40-int(current*40/total)))
     sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
     sys.stdout.flush()
     
-# Download the license
-def downloadLicense(url, name, badge):
-    """Download the specified License text and its badge"""
+def updateLicense(url, name, badge):
+    """Update the project with the specified License text and badge."""
     print('License ' + name + ' download in progress.')    
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
@@ -121,7 +120,7 @@ def main():
             license_url = repo.raw_base_url
             license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
             repo_url = repo.repo_url
-            progressBar(count_current, count_total)
+            updateProgressBar(count_current, count_total)
             for license_file in license_files:
                 missing = True
                 try:
@@ -130,7 +129,7 @@ def main():
                     if err.code == 404:
                         missing = True
                 else:
-                    makeprint(' ✓ Found: ' + license_url + license_file)
+                    printLicenseStatus(' ✓ Found: ' + license_url + license_file)
                     report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
                     report_file.write(' ✓ Found: ' + license_url + license_file + " \n")
                     missing = False
@@ -138,7 +137,7 @@ def main():
                     break
 
             if missing:
-                makeprint(' ✗ Missing the license, this repo is proprietary!')
+                printLicenseStatus(' ✗ Missing the license, this repo is proprietary!')
                 report_file.write('Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
                 report_file.write(' ✗ Missing the license, this repo is proprietary!\n')
                 count_no_license+=1
@@ -197,31 +196,31 @@ def main():
              
     elif args.license:
         if args.license == 'GPLv2':
-            downloadLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
+            updateLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
         elif args.license == 'GPLv3':
-            downloadLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
+            updateLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
         elif args.license == 'LGPLv3':
-            downloadLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
+            updateLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
         elif args.license == 'AGPLv3':
-            downloadLicense("http://www.gnu.org/licenses/agpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
+            updateLicense("http://www.gnu.org/licenses/agpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
         elif args.license == 'FDLv1.3':
-            downloadLicense("http://www.gnu.org/licenses/fdl-1.3.txt", args.license, '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
+            updateLicense("http://www.gnu.org/licenses/fdl-1.3.txt", args.license, '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
         elif args.license == 'Apachev2':
-            downloadLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.license, '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
+            updateLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.license, '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
         elif args.license == 'CC-BY':
-            downloadLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.license, '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
+            updateLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.license, '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
         elif args.license == 'BSDv2':
-            downloadLicense("https://spdx.org/licenses/BSD-2-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
+            updateLicense("https://spdx.org/licenses/BSD-2-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
         elif args.license == 'BSDv3':
-            downloadLicense("https://spdx.org/licenses/BSD-3-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
+            updateLicense("https://spdx.org/licenses/BSD-3-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
         elif args.license == 'BSDv4':
-            downloadLicense("https://spdx.org/licenses/BSD-4-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
+            updateLicense("https://spdx.org/licenses/BSD-4-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
         elif args.license == 'MPLv2':
-            downloadLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", args.license, '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
+            updateLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", args.license, '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
         elif args.license == 'UNLICENSE':
-            downloadLicense("http://unlicense.org/UNLICENSE", args.license, '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
+            updateLicense("http://unlicense.org/UNLICENSE", args.license, '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
         elif args.license == 'MIT':
-            downloadLicense("https://spdx.org/licenses/MIT.txt", args.license, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
+            updateLicense("https://spdx.org/licenses/MIT.txt", args.license, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
         else:
             print('License not found!')    
 
