@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-        
+
+#Import the necessary packages
+
 import sys
 import time
 import urllib.request
@@ -10,38 +12,52 @@ from ghlicense import providers
 from argparse import RawTextHelpFormatter
 
 enhanced_description = """
-This script scans every repo of the specified user for a license
-file. If a license can't be found, the script will upload a
-a specified license to your repo.\n
-Choose a license on http://choosealicense.com/licenses/ or use 
-http://www.addalicense.com/.\n
-Remember, without a license file, your project is proprietary!
+    This script scans every repo of the specified user for a license
+    file. If a license can't be found, the script will upload a
+    a specified license to your repo.\n
+    Choose a license on http://choosealicense.com/licenses/ or use 
+    http://www.addalicense.com/.\n
+    Remember, without a license file, your project is proprietary!
 """
+
 # Load all the providers
 enabled_providers, disabled_providers = repobase.get_providers()
+
 # Set all the  argument
 parser = argparse.ArgumentParser(description = "GitHosting License checker and downloader",
     epilog = enhanced_description, formatter_class=RawTextHelpFormatter)
+
 err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
+
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
+
 parser.add_argument("--license", help="Download a license file, arguments: [License_name]", action="store")
+
 parser.add_argument("--licenselist", help="Show licenses available", action="store_true")
+
 parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
     (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
+    
 parser.add_argument("--report", help="The report filename for scan (optional)", action="store")
+
 parser.add_argument("--origin", help="The origin of the git repo (optional)", action="store")
+
 parser.add_argument('args', nargs=argparse.REMAINDER)
+
 args = parser.parse_args()
+
 # In case of not parameter show the help
 if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(0)
+    
 # Used to print with the progressbar support
 def makeprint(x):
     sys.stdout.write(" "*52)
     sys.stdout.write("\r")
     sys.stdout.flush()
     print (x)
+    
 # Generate a progressbar of the status
 def progressBar(current, total):
     sys.stdout.write("|")
@@ -49,14 +65,16 @@ def progressBar(current, total):
     sys.stdout.write("-"*(40-int(current*40/total)))
     sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
     sys.stdout.flush()
+    
 # Download the license
 def downloadLicense(url, name, badge):
     print('License ' + name + ' download in progress.')    
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
         print('License ' + name + ' downloaded with filename LICENSE.')
+        
     # Search for the readme
-    readme_files = ['README.md','Readme.md','README.txt','readme','README','readme.txt','readme.md']
+    readme_files = ['README.md','Readme.md','README.txt','readme','README','readme.txt','readme.md', 'read_me', 'Read_me', 'READ_ME']
     for readme_file in readme_files:
         if os.path.isfile(readme_file):
             f = open(readme_file, 'r+')
@@ -69,6 +87,7 @@ def downloadLicense(url, name, badge):
             f.write("".join(text))
             f.close()
             print('Added badge license for ' + name + ' in ' + readme_file + '.')
+            
             # In case of git commit the file
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
@@ -78,6 +97,7 @@ def downloadLicense(url, name, badge):
                     os.system('git push ' + args.origin + ' master')
                 else:
                     os.system('git push origin master')
+                    
 # Execute the script
 def main():
     if args.scan:
