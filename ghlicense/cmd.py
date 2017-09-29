@@ -92,7 +92,7 @@ def updateLicense(url, name, badge):
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
                 os.system('git add ' + readme_file)
-                os.system("git commit -m 'Added ' + name + ' LICENSE'")
+                os.system('git commit -m "Added ' + name + ' LICENSE"')
                 if args.origin != None:
                     os.system('git push ' + args.origin + ' master')
                 else:
