@@ -18,6 +18,8 @@ In case of a git clone:
 pip3 install -e ./folder-of-the-repo
 ```
 
+_**Info:** This overwrites the `init.templatedir` global git config after creating a backup of the current value in `~/.gh-license/config.ini`._
+
 
 ## Example
 
