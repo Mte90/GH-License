@@ -68,6 +68,7 @@ def progressBar(current, total):
     
 # Download the license
 def downloadLicense(url, name, badge):
+    """Download the specified License text and its badge"""
     print('License ' + name + ' download in progress.')    
     if not os.path.isfile("LICENSE"):
         urllib.request.urlretrieve(url, "LICENSE")
@@ -92,7 +93,7 @@ def downloadLicense(url, name, badge):
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
                 os.system('git add ' + readme_file)
-                os.system("git commit -m 'missing LICENSE'")
+                os.system("git commit -m 'Added ' + name + ' LICENSE'")
                 if args.origin != None:
                     os.system('git push ' + args.origin + ' master')
                 else:
