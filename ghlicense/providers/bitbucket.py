@@ -16,14 +16,14 @@ class BitBucketProvider(repobase.Provider):
     def __init__(self, username):
         """Initialise the BitBucketProvider using the Bitbucket module.
 
-        The Bituvket username is initialised to username.
+        The Bitbucket username is initialised to username.
 
         Keyword arguments:
         username -- The Bitbucket username.
         """
         self.bb = Bitbucket()
         self.username = username
-    
+
     def get_repos(self):
         """Wrapper around BitBucket.repository.public()."""
         # Attempt to obtain the list of public BitBucket repos of the user

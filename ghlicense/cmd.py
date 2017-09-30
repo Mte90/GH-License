@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-#Import the necessary packages
+# Import the necessary packages
 
 import sys
 import time
@@ -23,41 +23,36 @@ enhanced_description = """
 # Load all the providers
 enabled_providers, disabled_providers = repobase.get_providers()
 
-# Set all the  argument
+# Parse the cmdline and initialise args
 parser = argparse.ArgumentParser(description = "GitHosting License checker and downloader",
-    epilog = enhanced_description, formatter_class=RawTextHelpFormatter)
+        epilog = enhanced_description, formatter_class=RawTextHelpFormatter)
 
 err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
 
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
-
 parser.add_argument("--license", help="Download a license file, arguments: [License_name]", action="store")
-
 parser.add_argument("--licenselist", help="Show licenses available", action="store_true")
-
 parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
-    (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
-    
+        (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
 parser.add_argument("--report", help="The report filename for scan (optional)", action="store")
-
 parser.add_argument("--origin", help="The origin of the git repo (optional)", action="store")
-
 parser.add_argument('args', nargs=argparse.REMAINDER)
 
 args = parser.parse_args()
 
-# In case of not parameter show the help
+# Check whether atleast 1 cmdline param was passed to the script.
+# If not then display help/usage and quit.
 if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(0)
-    
+
 def printLicenseStatus(x):
     """Print License status messages with a progressbar."""
     sys.stdout.write(" "*52)
     sys.stdout.write("\r")
     sys.stdout.flush()
     print (x)
-    
+
 def updateProgressBar(current, total):
     """Display a progressbar using ASCII characters alongwith the status."""
     sys.stdout.write("|")
@@ -65,20 +60,30 @@ def updateProgressBar(current, total):
     sys.stdout.write("-"*(40-int(current*40/total)))
     sys.stdout.write(" | Done " + str(int(current*100/total)) + "% \r")
     sys.stdout.flush()
-    
+
 def updateLicense(url, name, badge):
     """Update the project with the specified License text and badge."""
+
     print('License ' + name + ' download in progress.')    
+    # If a file "LICENSE" does NOT exist in the repo
     if not os.path.isfile("LICENSE"):
+        # Obtain the License text and save it as the file LICENSE
         urllib.request.urlretrieve(url, "LICENSE")
-        print('License ' + name + ' downloaded with filename LICENSE.')
-        
-    # Search for the readme
+        print('License ' + name + ' saved as file LICENSE.')
+
+    # If a README file by any of these names exists
+    # then add License details and badge to it.
     readme_files = ['README.md','Readme.md','README.txt','readme','README','readme.txt','readme.md', 'read_me', 'Read_me', 'READ_ME']
     for readme_file in readme_files:
+
         if os.path.isfile(readme_file):
+            # Open the file for reading/writing
             f = open(readme_file, 'r+')
+
+            # Load entire file as a list of lines
             text = [i for i in f.readlines()]
+
+            # Insert the License name and badge at the beginning of the file
             f.seek(0)
             if len(text) > 0 and text[0][0] == '#':
                 f.write(text[0])
@@ -87,27 +92,40 @@ def updateLicense(url, name, badge):
             f.write("".join(text))
             f.close()
             print('Added badge license for ' + name + ' in ' + readme_file + '.')
-            
-            # In case of git commit the file
+
+            # If within a git repository, commit the above changes to current branch
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
                 os.system('git add ' + readme_file)
                 os.system('git commit -m "Added ' + name + ' LICENSE"')
+                # If a remote repository exists attempt to push change to it
                 if args.origin != None:
                     os.system('git push ' + args.origin + ' master')
                 else:
                     os.system('git push origin master')
-                    
+
 # Execute the script
 def main():
+
+    # If the script was launched in "scan" mode
     if args.scan:
+
+        # Initialise specified repo provider
+        # (or use the default provider, if one is not specified)
         repo_provider = repobase.get_provider(args.provider)
+
+        # Obtain the username passed on the cmd-line in "scan" mode
         user = repo_provider(args.scan)
+
+        # Create the specified license report file
+        # (or use the default license report file name, if one is not specified)
         if args.report == None:
             report_file = open(args.scan + '-' + args.provider + '-license-report','w')
             print(' No report file name found, using default "'+ args.scan + '-' + args.provider + '-license-report"!')
         else:
             report_file = open(args.report,'w')
+
+        # Start scanning user's public repos
         report_file.write('Last scan done on: ' + time.strftime("%c") + "\n")
         report_file.write('Scan report of user: ' + args.scan + "\n\n")
         count_total = len(list(user.get_repos()))
@@ -115,12 +133,16 @@ def main():
         count_license = 0
         count_no_license = 0
         count_forked = 0
+
+        # For each repo found
         for repo in user.get_repos():
             print(repo.full_name)
             license_url = repo.raw_base_url
             license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
             repo_url = repo.repo_url
             updateProgressBar(count_current, count_total)
+
+            # Look for a License file in the root directory fo the repo
             for license_file in license_files:
                 missing = True
                 try:
@@ -147,6 +169,8 @@ def main():
                     count_forked+=1
             count_current+=1
             report_file.write("\n")
+
+        # Update progress based on % of repos scanned
         print ("|" + "#"*40 + "| Done 100%")
         report_file.write("Statistics: \n")
         report_file.write("Repos with License: " + str(count_license) + "\n")
@@ -155,46 +179,50 @@ def main():
         report_file.write("Total Repos: " + str(count_no_license + count_license) + "\n")
         report_file.close()
 
+    # If the script was launched in "licenselist" mode
     elif args.licenselist == True:
-             sys.stderr.write('\n  GPLv2\n'\
-             '\tYou may copy, distribute and modify the software.\n'\
-             '\tAny modifications must also be made available under\n'\
-             '\tthe GPL along with build & install instructions.'\
-             '\n\n  GPLv3\n'\
-             '\tSame of GPLv2 but easily integrable with other licenses.'\
-             '\n\n  LGPLv3\n'\
-             '\tThis license is mainly applied to libraries.\n'\
-             '\tDerivatives works that use LGPL library can use other licenses.'\
-             '\n\n  AGPLv3\n'\
-             '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
-             '\tbuilt for network software, the AGPL is the GPL of the web.'\
-             '\n\n  FDLv1.3\n'\
-             '\tThis license is for a manual, textbook, or other\n'\
-             '\tfunctional and useful document "free" in the sense of freedom.'\
-             '\n\n  Apachev2\n'\
-             '\tYou can do what you like with the software, as long as you include the\n'\
-             '\trequired notices.'\
-             '\n\n  CC-BY\n'\
-             '\tThis is the ‘standard’ creative commons.\n'\
-             '\tIt should not be used for the software.'\
-             '\n\n  BSDv2\n'\
-             '\tThe BSD 2-clause license allows you almost unlimited freedom.'
-             '\n\n  BSDv3\n'\
-             '\tThe BSD 3-clause license allows you almost unlimited freedom.'
-             '\n\n  BSDv4\n'\
-             '\tThe BSD 4-clause license is a permissive license with a special \n'\
-             '\tobligation to credit the copyright holders of the software.'\
-             '\n\n  MPLv2\n'\
-             '\tMPL is a copyleft license. You must make the source code for any\n'\
-             '\tof your changes available under MPL, but you can combine the\n'\
-             '\tMPL software with proprietary code.'\
-             '\n\n  UNLICENSE\n'\
-             '\tReleases code into the public domain.'\
-             '\n\n  MIT\n'\
-             '\tA short, permissive software license.\n\n')
-             sys.exit(1)
-             
+        # Print a hardcoded list of known Licenses
+        sys.stderr.write('\n  GPLv2\n'\
+                '\tYou may copy, distribute and modify the software.\n'\
+                '\tAny modifications must also be made available under\n'\
+                '\tthe GPL along with build & install instructions.'\
+                '\n\n  GPLv3\n'\
+                '\tSame of GPLv2 but easily integrable with other licenses.'\
+                '\n\n  LGPLv3\n'\
+                '\tThis license is mainly applied to libraries.\n'\
+                '\tDerivatives works that use LGPL library can use other licenses.'\
+                '\n\n  AGPLv3\n'\
+                '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
+                '\tbuilt for network software, the AGPL is the GPL of the web.'\
+                '\n\n  FDLv1.3\n'\
+                '\tThis license is for a manual, textbook, or other\n'\
+                '\tfunctional and useful document "free" in the sense of freedom.'\
+                '\n\n  Apachev2\n'\
+                '\tYou can do what you like with the software, as long as you include the\n'\
+                '\trequired notices.'\
+                '\n\n  CC-BY\n'\
+                '\tThis is the ‘standard’ creative commons.\n'\
+                '\tIt should not be used for the software.'\
+                '\n\n  BSDv2\n'\
+                '\tThe BSD 2-clause license allows you almost unlimited freedom.'
+                '\n\n  BSDv3\n'\
+                '\tThe BSD 3-clause license allows you almost unlimited freedom.'
+                '\n\n  BSDv4\n'\
+                '\tThe BSD 4-clause license is a permissive license with a special \n'\
+                '\tobligation to credit the copyright holders of the software.'\
+                '\n\n  MPLv2\n'\
+                '\tMPL is a copyleft license. You must make the source code for any\n'\
+                '\tof your changes available under MPL, but you can combine the\n'\
+                '\tMPL software with proprietary code.'\
+                '\n\n  UNLICENSE\n'\
+                '\tReleases code into the public domain.'\
+                '\n\n  MIT\n'\
+                '\tA short, permissive software license.\n\n')
+        sys.exit(1)
+
+    # If the script was launched in "license" mode
     elif args.license:
+        # Check which license is being requested and update accordingly
         if args.license == 'GPLv2':
             updateLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
         elif args.license == 'GPLv3':

@@ -28,7 +28,7 @@ class Provider(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, username):
         pass
-    
+
     @abstractmethod
     def get_repos(self):
         pass
@@ -64,7 +64,13 @@ def get_provider(name):
         sys.exit(1)
 
 def get_providers():
-    """Returns a pair of lists. The "good" list contains the list of currently registered providers."""
+    """Returns a pair of dicts of providers.
+
+    Each registered provider is in one of the 2 dicts.
+
+    The "good" dict contains successfully loaded providers.
+    The "bad" dict contains providers that failed to load/initialise.
+    """
     good = []
     bad = []
     for name in providers:
