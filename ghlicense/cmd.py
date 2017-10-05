@@ -159,11 +159,61 @@ def pickLicenseFromLastUsed(lastUsedLicenses):
             print('[{num}]{license}'.format(num=i+1, license=lastUsedLicenses[i]),end='')
             if i < len(lastUsedLicenses) - 1:
                 print(', ',end='')
-        print("\nPress 1, 2, and so on to download the license,\nor e", end='')
+        print("\nPress [1], [2], and so on to download the license,\nor e", end='')
     else:
         print("you also have no previously used licenses.\nE", end='')
 
     print("nter the name of the license you want, or press [n] to see a description of every license.")
+    licenseInput = input('')
+
+    if licenseInput.lower() == 'n':
+        printLicenseList()
+        sys.exit(1)
+    
+    try:
+        selectedLicense = lastUsedLicenses[int(licenseInput)]
+        return selectedLicense
+    except (ValueError, IndexError) as e:
+        return licenseInput
+
+def printLicenseList():
+    """Print a hardcoded list of known Licenses"""
+    sys.stderr.write('\n  GPLv2\n'\
+            '\tYou may copy, distribute and modify the software.\n'\
+            '\tAny modifications must also be made available under\n'\
+            '\tthe GPL along with build & install instructions.'\
+            '\n\n  GPLv3\n'\
+            '\tSame of GPLv2 but easily integrable with other licenses.'\
+            '\n\n  LGPLv3\n'\
+            '\tThis license is mainly applied to libraries.\n'\
+            '\tDerivatives works that use LGPL library can use other licenses.'\
+            '\n\n  AGPLv3\n'\
+            '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
+            '\tbuilt for network software, the AGPL is the GPL of the web.'\
+            '\n\n  FDLv1.3\n'\
+            '\tThis license is for a manual, textbook, or other\n'\
+            '\tfunctional and useful document "free" in the sense of freedom.'\
+            '\n\n  Apachev2\n'\
+            '\tYou can do what you like with the software, as long as you include the\n'\
+            '\trequired notices.'\
+            '\n\n  CC-BY\n'\
+            '\tThis is the ‘standard’ creative commons.\n'\
+            '\tIt should not be used for the software.'\
+            '\n\n  BSDv2\n'\
+            '\tThe BSD 2-clause license allows you almost unlimited freedom.'
+            '\n\n  BSDv3\n'\
+            '\tThe BSD 3-clause license allows you almost unlimited freedom.'
+            '\n\n  BSDv4\n'\
+            '\tThe BSD 4-clause license is a permissive license with a special \n'\
+            '\tobligation to credit the copyright holders of the software.'\
+            '\n\n  MPLv2\n'\
+            '\tMPL is a copyleft license. You must make the source code for any\n'\
+            '\tof your changes available under MPL, but you can combine the\n'\
+            '\tMPL software with proprietary code.'\
+            '\n\n  UNLICENSE\n'\
+            '\tReleases code into the public domain.'\
+            '\n\n  MIT\n'\
+            '\tA short, permissive software license.\n\n')
 
 # Execute the script
 def main():
@@ -242,43 +292,7 @@ def main():
 
     # If the script was launched in "licenselist" mode
     elif args.licenselist == True:
-        # Print a hardcoded list of known Licenses
-        sys.stderr.write('\n  GPLv2\n'\
-                '\tYou may copy, distribute and modify the software.\n'\
-                '\tAny modifications must also be made available under\n'\
-                '\tthe GPL along with build & install instructions.'\
-                '\n\n  GPLv3\n'\
-                '\tSame of GPLv2 but easily integrable with other licenses.'\
-                '\n\n  LGPLv3\n'\
-                '\tThis license is mainly applied to libraries.\n'\
-                '\tDerivatives works that use LGPL library can use other licenses.'\
-                '\n\n  AGPLv3\n'\
-                '\tThe AGPL license differs from the other GNU licenses in that it was\n'\
-                '\tbuilt for network software, the AGPL is the GPL of the web.'\
-                '\n\n  FDLv1.3\n'\
-                '\tThis license is for a manual, textbook, or other\n'\
-                '\tfunctional and useful document "free" in the sense of freedom.'\
-                '\n\n  Apachev2\n'\
-                '\tYou can do what you like with the software, as long as you include the\n'\
-                '\trequired notices.'\
-                '\n\n  CC-BY\n'\
-                '\tThis is the ‘standard’ creative commons.\n'\
-                '\tIt should not be used for the software.'\
-                '\n\n  BSDv2\n'\
-                '\tThe BSD 2-clause license allows you almost unlimited freedom.'
-                '\n\n  BSDv3\n'\
-                '\tThe BSD 3-clause license allows you almost unlimited freedom.'
-                '\n\n  BSDv4\n'\
-                '\tThe BSD 4-clause license is a permissive license with a special \n'\
-                '\tobligation to credit the copyright holders of the software.'\
-                '\n\n  MPLv2\n'\
-                '\tMPL is a copyleft license. You must make the source code for any\n'\
-                '\tof your changes available under MPL, but you can combine the\n'\
-                '\tMPL software with proprietary code.'\
-                '\n\n  UNLICENSE\n'\
-                '\tReleases code into the public domain.'\
-                '\n\n  MIT\n'\
-                '\tA short, permissive software license.\n\n')
+        printLicenseList()
         sys.exit(1)
 
     # If the script was launched in "license" mode
@@ -286,7 +300,6 @@ def main():
 
         # Called without a license. List off the last used licenses and let user select.
         if args.license == True:
-            print("Called with just --license")
             lastUsedLicenses = loadLastUsedLicenses()
             chosenLicense = pickLicenseFromLastUsed(lastUsedLicenses)
 
