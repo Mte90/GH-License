@@ -166,12 +166,14 @@ def pickLicenseFromLastUsed(lastUsedLicenses):
     print("nter the name of the license you want, or press [n] to see a description of every license.")
     licenseInput = input('')
 
+    # Print the list and then exit
     if licenseInput.lower() == 'n':
         printLicenseList()
         sys.exit(1)
     
+    # Return the name of the selected license if possible, or just return the input license
     try:
-        selectedLicense = lastUsedLicenses[int(licenseInput)]
+        selectedLicense = lastUsedLicenses[int(licenseInput) - 1]
         return selectedLicense
     except (ValueError, IndexError) as e:
         return licenseInput
@@ -298,40 +300,51 @@ def main():
     # If the script was launched in "license" mode
     elif args.license:
 
+        lastUsedLicenses = loadLastUsedLicenses()
+
+        # This will be the actual license if explicitly called with a license
+        chosenLicense = args.license
+
         # Called without a license. List off the last used licenses and let user select.
         if args.license == True:
-            lastUsedLicenses = loadLastUsedLicenses()
             chosenLicense = pickLicenseFromLastUsed(lastUsedLicenses)
 
-        # Called with a license. Check which license is being requested and update accordingly
-        elif args.license == 'GPLv2':
-            updateLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
-        elif args.license == 'GPLv3':
-            updateLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
-        elif args.license == 'LGPLv3':
-            updateLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
-        elif args.license == 'AGPLv3':
-            updateLicense("http://www.gnu.org/licenses/agpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
-        elif args.license == 'FDLv1.3':
-            updateLicense("http://www.gnu.org/licenses/fdl-1.3.txt", args.license, '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
-        elif args.license == 'Apachev2':
-            updateLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", args.license, '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
-        elif args.license == 'CC-BY':
-            updateLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", args.license, '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
-        elif args.license == 'BSDv2':
-            updateLicense("https://spdx.org/licenses/BSD-2-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
-        elif args.license == 'BSDv3':
-            updateLicense("https://spdx.org/licenses/BSD-3-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
-        elif args.license == 'BSDv4':
-            updateLicense("https://spdx.org/licenses/BSD-4-Clause.txt", args.license, '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
-        elif args.license == 'MPLv2':
-            updateLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", args.license, '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
-        elif args.license == 'UNLICENSE':
-            updateLicense("http://unlicense.org/UNLICENSE", args.license, '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
-        elif args.license == 'MIT':
-            updateLicense("https://spdx.org/licenses/MIT.txt", args.license, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
+        # Check which license is being requested and update accordingly
+        if chosenLicense == 'GPLv2':
+            updateLicense("http://www.gnu.org/licenses/gpl-2.0.txt", chosenLicense, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
+        elif chosenLicense == 'GPLv3':
+            updateLicense("http://www.gnu.org/licenses/gpl-3.0.txt", chosenLicense, '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
+        elif chosenLicense == 'LGPLv3':
+            updateLicense("http://www.gnu.org/licenses/lgpl-3.0.txt", chosenLicense, '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
+        elif chosenLicense == 'AGPLv3':
+            updateLicense("http://www.gnu.org/licenses/agpl-3.0.txt", chosenLicense, '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
+        elif chosenLicense == 'FDLv1.3':
+            updateLicense("http://www.gnu.org/licenses/fdl-1.3.txt", chosenLicense, '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
+        elif chosenLicense == 'Apachev2':
+            updateLicense("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", chosenLicense, '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
+        elif chosenLicense == 'CC-BY':
+            updateLicense("http://creativecommons.org/licenses/by/3.0/legalcode.txt", chosenLicense, '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
+        elif chosenLicense == 'BSDv2':
+            updateLicense("https://spdx.org/licenses/BSD-2-Clause.txt", chosenLicense, '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
+        elif chosenLicense == 'BSDv3':
+            updateLicense("https://spdx.org/licenses/BSD-3-Clause.txt", chosenLicense, '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
+        elif chosenLicense == 'BSDv4':
+            updateLicense("https://spdx.org/licenses/BSD-4-Clause.txt", chosenLicense, '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
+        elif chosenLicense == 'MPLv2':
+            updateLicense("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", chosenLicense, '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
+        elif chosenLicense == 'UNLICENSE':
+            updateLicense("http://unlicense.org/UNLICENSE", chosenLicense, '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
+        elif chosenLicense == 'MIT':
+            updateLicense("https://spdx.org/licenses/MIT.txt", chosenLicense, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
         else:
-            print('License not found!')    
+            print('License {license} not found!'.format(license=chosenLicense))
+            sys.exit(1) 
+
+        # Save the three most recently used licenses (remove duplicates, keep order)
+        lastUsedLicenses.insert(0, chosenLicense)
+        uniqueLastUsed = []
+        [uniqueLastUsed.append(item) for item in lastUsedLicenses if item not in uniqueLastUsed]
+        saveLastUsedLicenses(uniqueLastUsed[0:3])
 
 if __name__ == "__main__":
     main()
