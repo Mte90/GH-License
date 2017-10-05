@@ -121,7 +121,7 @@ def saveLastUsedLicenses(lastUsedLicenses):
     if not os.path.exists(os.path.dirname(configFilePath)):
         os.makedirs(os.path.dirname(configFilePath))
 
-    if not config['lastUsed']:
+    if not 'lastUsed' in config:
         config['lastUsed'] = {}
     config['lastUsed']['lastUsedLicenses'] = ",".join(lastUsedLicenses)
     with open(configFilePath, 'w') as configFile:
