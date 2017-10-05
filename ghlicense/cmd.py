@@ -7,6 +7,7 @@ import time
 import urllib.request
 import argparse
 import os
+from configparser import ConfigParser
 from ghlicense import repobase
 from ghlicense import providers
 from argparse import RawTextHelpFormatter
@@ -30,7 +31,7 @@ parser = argparse.ArgumentParser(description = "GitHosting License checker and d
 err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if len(disabled_providers) > 0 else ""
 
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
-parser.add_argument("--license", help="Download a license file, arguments: [License_name]", action="store")
+parser.add_argument("--license", help="Download a license file, arguments: [License_name]", nargs='?', const=True)
 parser.add_argument("--licenselist", help="Show licenses available", action="store_true")
 parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
         (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
@@ -103,6 +104,66 @@ def updateLicense(url, name, badge):
                     os.system('git push ' + args.origin + ' master')
                 else:
                     os.system('git push origin master')
+
+def saveLastUsedLicenses(lastUsedLicenses):
+    """
+    Saves the most recently uses licenses in the config file. If no config
+    file exists, it will create one.
+
+    lastUsedLicenses: a sequence of the three most recently used licenses
+    in order of most recently used first.
+    """
+    config = ConfigParser()
+    configFilePath = os.path.expanduser('~/.gh-license/config.ini')
+    config.read(configFilePath)
+
+    # make the dirs if necessary.
+    if not os.path.exists(os.path.dirname(configFilePath)):
+        os.makedirs(os.path.dirname(configFilePath))
+
+    if not config['lastUsed']:
+        config['lastUsed'] = {}
+    config['lastUsed']['lastUsedLicenses'] = ",".join(lastUsedLicenses)
+    with open(configFilePath, 'w') as configFile:
+        config.write(configFile)
+
+def loadLastUsedLicenses():
+    """
+    Returns an array of the last used licenses, in order of
+    most recently used first. Returns an empty array if no license has been
+    previously used.
+    """
+    config = ConfigParser()
+    if not config.read(os.path.expanduser('~/.gh-license/config.ini')):
+        return []
+    try:
+        lastUsed = config['lastUsed']['lastUsedLicenses'].split(',')
+        return lastUsed
+    except KeyError as e:
+        return []
+
+def pickLicenseFromLastUsed(lastUsedLicenses):
+    """
+    Assumes the user did not select a license. Presents them with
+    their most recently used licenses from lastUsedLicenses and allows
+    them to select one (or any other license).
+
+    Returns the string name of the selected license.
+    lastUsedLicenses: a sequence of the three most recently used licenses
+    in order of most recently used first.
+    """
+    print("You have not selected a license, ", end='')
+    if lastUsedLicenses:
+        print("the last licenses you've used are: ")
+        for i in range(len(lastUsedLicenses)):
+            print('[{num}]{license}'.format(num=i+1, license=lastUsedLicenses[i]),end='')
+            if i < len(lastUsedLicenses) - 1:
+                print(', ',end='')
+        print("\nPress 1, 2, and so on to download the license,\nor e", end='')
+    else:
+        print("you also have no previously used licenses.\nE", end='')
+
+    print("nter the name of the license you want, or press [n] to see a description of every license.")
 
 # Execute the script
 def main():
@@ -222,8 +283,15 @@ def main():
 
     # If the script was launched in "license" mode
     elif args.license:
-        # Check which license is being requested and update accordingly
-        if args.license == 'GPLv2':
+
+        # Called without a license. List off the last used licenses and let user select.
+        if args.license == True:
+            print("Called with just --license")
+            lastUsedLicenses = loadLastUsedLicenses()
+            chosenLicense = pickLicenseFromLastUsed(lastUsedLicenses)
+
+        # Called with a license. Check which license is being requested and update accordingly
+        elif args.license == 'GPLv2':
             updateLicense("http://www.gnu.org/licenses/gpl-2.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
         elif args.license == 'GPLv3':
             updateLicense("http://www.gnu.org/licenses/gpl-3.0.txt", args.license, '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
