@@ -18,7 +18,8 @@ In case of a git clone:
 pip3 install -e ./folder-of-the-repo
 ```
 
-_**Info:** This overwrites the `init.templatedir` global git config after creating a backup of the current value in `~/.gh-license/config.ini`._
+_**Info:** This overwrites the `init.templatedir` global git config after creating a backup of the current value in `~/.gh-license/config.ini` with the key `templatedir` in section `main`.  
+The installed git template contains a hook that will be installed every time you run `git init`. The hook reminds you to install a license if you ever forget, and disables itself after adding one._
 
 
 ## Example
