@@ -16,7 +16,7 @@ enhanced_description = """
     This script scans every repo of the specified user for a license
     file. If a license can't be found, the script will upload a
     a specified license to your repo.\n
-    Choose a license on http://choosealicense.com/licenses/ or use 
+    Choose a license on http://choosealicense.com/licenses/ or use
     http://www.addalicense.com/.\n
     Remember, without a license file, your project is proprietary!
 """
@@ -33,7 +33,7 @@ err_providers_txt = "(errored providers: %s)" % ", ".join(disabled_providers) if
 parser.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
 parser.add_argument("--license", help="Download a license file, arguments: [License_name]", nargs='?', const=True)
 parser.add_argument("--licenselist", help="Show licenses available", action="store_true")
-parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" % 
+parser.add_argument("--provider", help="Repository provider. Defaults to github. Available providers: %s %s" %
         (", ".join(enabled_providers), err_providers_txt), action="store", default="github")
 parser.add_argument("--report", help="The report filename for scan (optional)", action="store")
 parser.add_argument("--origin", help="The origin of the git repo (optional)", action="store")
@@ -65,7 +65,7 @@ def updateProgressBar(current, total):
 def updateLicense(url, name, badge):
     """Update the project with the specified License text and badge."""
 
-    print('License ' + name + ' download in progress.')    
+    print('License ' + name + ' download in progress.')
     # If a file "LICENSE" does NOT exist in the repo
     if not os.path.isfile("LICENSE"):
         # Obtain the License text and save it as the file LICENSE
@@ -170,7 +170,7 @@ def pickLicenseFromLastUsed(lastUsedLicenses):
     if licenseInput.lower() == 'n':
         printLicenseList()
         sys.exit(1)
-    
+
     # Return the name of the selected license if possible, or just return the input license
     try:
         selectedLicense = lastUsedLicenses[int(licenseInput) - 1]
@@ -338,7 +338,7 @@ def main():
             updateLicense("https://spdx.org/licenses/MIT.txt", chosenLicense, '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
         else:
             print('License {license} not found!'.format(license=chosenLicense))
-            sys.exit(1) 
+            sys.exit(1)
 
         # Save the three most recently used licenses (remove duplicates, keep order)
         lastUsedLicenses.insert(0, chosenLicense)
