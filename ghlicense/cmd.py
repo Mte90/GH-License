@@ -247,11 +247,19 @@ def main():
         count_no_license = 0
         count_forked = 0
 
+        license_base_name = 'license'
+        # This is ordered by the most common extensions
+        license_extensions = ['', '.md', '.txt']
+        license_files = []
+
+        # This is ordered like this because most license file names are in full caps
+        for license_name in [license_base_name.upper(), license_base_name]:
+            license_files.extend([license_name + extension for extension in license_extensions])
+
         # For each repo found
         for repo in user.get_repos():
             print(repo.full_name)
             license_url = repo.raw_base_url
-            license_files = ['LICENSE.txt','license','LICENSE','license.txt','license.md','LICENSE.md']
             repo_url = repo.repo_url
             updateProgressBar(count_current, count_total)
 
