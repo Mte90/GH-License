@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import sys
+
+
+def self_remove():
+    self_remove_command = (
+        'python -c '
+        '"import os, time;'
+        'time.sleep(1);'
+        'os.remove(\'{}\');"'
+    ).format(sys.argv[0])
+
+    subprocess.Popen(self_remove_command, shell=True)
+
+
+def main():
+    red_color = '\033[33m'
+    reset_color = '\033[0m'
+
+    # This is extracted from ghlicense/cmd.py
+    # Move it into a common function.
+    license_files = [
+        'LICENSE', 'LICENSE.md', 'LICENSE.txt'
+        'license', 'license.md', 'license.txt'
+    ]
+
+    missing = True
+
+    for license_file in license_files:
+        if os.path.exists(license_file):
+            missing = False
+
+            break
+
+    if missing:
+        warning_message = (
+            'Warning:\n'
+            'This repo doesn\'t have a license file.\n'
+            'Add one by running "gh-license --license <license name>"'
+        )
+
+        print('{}{}{}'.format(red_color, warning_message, reset_color))
+    else:
+        self_remove()
+
+
+main()
