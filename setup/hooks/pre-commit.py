@@ -42,14 +42,14 @@ For example:
 Additionally, colored logging is supported if the package colorlog is
 installed.
 
-https://gist.github.com/carlos-jenkins/89da9dcf9e0d528ac978311938aade43
+https://gist.github.com/revolter/99ea1acd48ad7c2d898bca2bc58f37bc
 """
 
 from sys import argv
 from logging import getLogger
 from subprocess import Popen, PIPE
 from os import access, listdir, X_OK
-from os.path import isfile, isdir, abspath, normpath, dirname, join, basename
+from os.path import isfile, isdir, abspath, normpath, dirname, join, basename, splitext
 
 
 GIT_HOOKS = [
@@ -104,7 +104,7 @@ def main():
     log = getLogger(basename(__file__))
 
     # Check multihooks facing what hook type
-    hook_type = basename(__file__)
+    hook_type = splitext(basename(__file__))[0]
     if hook_type not in GIT_HOOKS:
         log.fatal('Unknown hook type: {}'.format(hook_type))
         exit(1)
