@@ -6,7 +6,7 @@ PROVIDER_PLUGIN_LOADED = True
 try:
     # Attempt to import the github module to interact with Github.com
     from github import Github
-except:
+except ImportError:
     # If the module failed to import, then this github provider can NOT be registered.
     PROVIDER_PLUGIN_LOADED = False
 
@@ -22,7 +22,7 @@ class GitHubProvider(repobase.Provider):
         """
         self.g = Github()
         self.user = self.g.get_user(username)
-    
+
     def get_repos(self):
         """Wrapper around github.get_repos()."""
         # Obtain a list of github repos of the user

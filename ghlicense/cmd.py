@@ -9,7 +9,6 @@ import argparse
 import os
 from configparser import ConfigParser
 from ghlicense import repobase
-from ghlicense import providers
 from argparse import RawTextHelpFormatter
 
 enhanced_description = """
@@ -139,7 +138,7 @@ def loadLastUsedLicenses():
     try:
         lastUsed = config['lastUsed']['lastUsedLicenses'].split(',')
         return lastUsed
-    except KeyError as e:
+    except KeyError:
         return []
 
 def pickLicenseFromLastUsed(lastUsedLicenses):
@@ -155,8 +154,8 @@ def pickLicenseFromLastUsed(lastUsedLicenses):
     print("You have not selected a license, ", end='')
     if lastUsedLicenses:
         print("the last licenses you've used are: ")
-        for i in range(len(lastUsedLicenses)):
-            print('[{num}]{license}'.format(num=i+1, license=lastUsedLicenses[i]),end='')
+        for i, licenseName in enumerate(lastUsedLicenses):
+            print('[{num}]{license}'.format(num=i+1, license=licenseName),end='')
             if i < len(lastUsedLicenses) - 1:
                 print(', ',end='')
         print("\nPress [1], [2], and so on to download the license,\nor e", end='')
@@ -175,7 +174,7 @@ def pickLicenseFromLastUsed(lastUsedLicenses):
     try:
         selectedLicense = lastUsedLicenses[int(licenseInput) - 1]
         return selectedLicense
-    except (ValueError, IndexError) as e:
+    except (ValueError, IndexError):
         return licenseInput
 
 def printLicenseList():
@@ -350,9 +349,18 @@ def main():
 
         # Save the three most recently used licenses (remove duplicates, keep order)
         lastUsedLicenses.insert(0, chosenLicense)
+
         uniqueLastUsed = []
-        [uniqueLastUsed.append(item) for item in lastUsedLicenses if item not in uniqueLastUsed]
-        saveLastUsedLicenses(uniqueLastUsed[0:3])
+        for item in lastUsedLicenses:
+            if len(uniqueLastUsed) >= 3:
+                break
+
+            if item in uniqueLastUsed:
+                continue
+
+            uniqueLastUsed.append(item)
+
+        saveLastUsedLicenses(uniqueLastUsed[:3])
 
 if __name__ == "__main__":
     main()

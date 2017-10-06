@@ -7,7 +7,7 @@ PROVIDER_PLUGIN_LOADED = True
 try:
     # Attempt to import the BitBucket module to interact with Bitbucket.org
     from bitbucket.bitbucket import Bitbucket
-except:
+except ImportError:
     # If the module failed to import, then this bitbucket provider can NOT be registered.
     PROVIDER_PLUGIN_LOADED = False
 
