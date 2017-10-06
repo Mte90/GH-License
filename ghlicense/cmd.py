@@ -277,8 +277,8 @@ def main():
                 report_file.write(' ✗ Missing the license, this repo is proprietary!\n')
                 count_no_license+=1
                 if repo.fork:
-                    print(' ☐ Is a fork, check the original or create a PR!')
-                    report_file.write(' ☐ Is a fork, check the original or create a PR!\n')
+                    print(' ! Is a fork, check the original or create a PR!')
+                    report_file.write(' ! Is a fork, check the original or create a PR!\n')
                     count_forked+=1
             count_current+=1
             report_file.write("\n")
