@@ -3,12 +3,13 @@ from abc import ABCMeta, abstractmethod
 
 # List of current successfully registered i.e. "active" providers.
 # These are sources of repos i.e. public repository hosts.
-global providers
-providers = {}
+PROVIDERS = {}
+
 
 class Repo:
     """Contains details of a repository."""
-    def __init__(self, full_name, raw_base_url, repo_url, default_branch = "master", fork = False):
+
+    def __init__(self, full_name, raw_base_url, repo_url, default_branch="master", fork=False):
         """Repo class constructor
 
         Keyword arguments:
@@ -24,6 +25,7 @@ class Repo:
         self.default_branch = default_branch
         self.fork = fork
 
+
 class Provider(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, username):
@@ -33,20 +35,24 @@ class Provider(metaclass=ABCMeta):
     def get_repos(self):
         pass
 
-def register_provider(name, provider_class, loaded = False):
+
+def register_provider(name, provider_class, loaded=False):
     """Register i.e. Activate a provider.
 
-    Each provider needs to call this function with loaded = True to register itself as a supported repo provider.
+    Each provider needs to call this function with loaded = True to register itself
+    as a supported repo provider.
+
     Keyword arguments:
     name -- Name of the provider.
     provider_class -- The name of the provider class.
     loaded -- Whether to register the provider (default False).
     """
-    if name not in providers:
+    if name not in PROVIDERS:
         if loaded:
-            providers[name] = provider_class
+            PROVIDERS[name] = provider_class
         else:
-            providers[name] = None
+            PROVIDERS[name] = None
+
 
 def get_provider(name):
     """Returns whether a repo provider is registered.
@@ -54,14 +60,15 @@ def get_provider(name):
     Keyword arguments:
     name -- Name of the provider to check if registered.
     """
-    if name in providers:
-        if not providers[name]:
+    if name in PROVIDERS:
+        if not PROVIDERS[name]:
             print("ERROR: Provider '%s' is disabled due to problems." % name)
             sys.exit(1)
-        return providers[name]
+        return PROVIDERS[name]
     else:
         print("ERROR: Provider '%s' does not exist!" % name)
         sys.exit(1)
+
 
 def get_providers():
     """Returns a pair of dicts of providers.
@@ -73,8 +80,8 @@ def get_providers():
     """
     good = []
     bad = []
-    for name in providers:
-        if providers[name]:
+    for name in PROVIDERS:
+        if PROVIDERS[name]:
             good.append(name)
         else:
             bad.append(name)

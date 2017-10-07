@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from configparser import ConfigParser
-from setuptools.command.develop import develop
-
 import os
 import shutil
 import subprocess
+from configparser import ConfigParser
+
+from setuptools.command.develop import develop
 
 
 class PostDevelopCommand(develop):
@@ -20,7 +20,8 @@ class PostDevelopCommand(develop):
         # copy the hooks folder in our git template folder
         shutil.copytree("setup/hooks", git_hooks_path)
 
-        get_config_arguments = ["git", "config", "--global", "init.templatedir"]
+        get_config_arguments = ["git", "config",
+                                "--global", "init.templatedir"]
 
         if not os.path.exists(config_path):
             # save the current init.templatedir git config if the user already
@@ -32,7 +33,8 @@ class PostDevelopCommand(develop):
 
                 config.read(config_path)
                 config.add_section("main")
-                config.set("main", "templatedir", current_config.decode("utf-8"))
+                config.set("main", "templatedir",
+                           current_config.decode("utf-8"))
 
                 with open(config_path, "w") as config_file:
                     config.write(config_file)
