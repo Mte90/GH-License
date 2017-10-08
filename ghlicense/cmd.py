@@ -343,7 +343,7 @@ def main():
         chosen_license = ARGS.license
 
         # Called without a license. List off the last used licenses and let user select.
-        if ARGS.license:
+        if not ARGS.license:
             chosen_license = pick_license_from_last_used(last_used_licenses)
 
         # Check which license is being requested and update accordingly
