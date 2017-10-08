@@ -122,7 +122,7 @@ def save_last_used_licenses(last_used_licenses):
     Saves the most recently uses licenses in the config file. If no config
     file exists, it will create one.
 
-    lastUsedLicenses: a sequence of the three most recently used licenses
+    last_used_licenses: a sequence of the three most recently used licenses
     in order of most recently used first.
     """
     config = ConfigParser()
@@ -176,7 +176,7 @@ def pick_license_from_last_used(last_used_licenses):
         print(
             "\nPress [1], [2], and so on to download the license,\nor e", end='')
     else:
-        print("you also have no previously used licenses.\nE", end='')
+        print("you also have no previously used licenses.\n", end='')
 
     print("Enter the name of the license you want, or press " +
           "[n] to see a description of every license.")
