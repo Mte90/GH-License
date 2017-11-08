@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name="gh-license",
-    version="0.2.3",
+    version="0.2.4",
     author="Mte90",
     install_requires=open(os.path.join(BASE_DIR, "requirements.txt")).readlines(),
     license="GPLv3",
