@@ -41,9 +41,9 @@ def main():
 
     if missing:
         warning_message = (
-            'Warning:\n'
+            '\nWarning:\n'
             'This repo doesn\'t have a license file.\n'
-            'Add one by running "gh-license --license <license name>"'
+            'Add one by running "gh-license --license <license name>"\n'
         )
 
         print('{}{}{}'.format(red_color, warning_message, reset_color))
