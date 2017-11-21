@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name="gh-license",
-    version="0.2.4",
+    version="0.2.5",
     author="Mte90",
     author_email="mte90net@gmail.com",
     url="https://github.com/Mte90/GH-License",
