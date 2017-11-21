@@ -39,8 +39,8 @@ class Provider(metaclass=ABCMeta):
 def register_provider(name, provider_class, loaded=False):
     """Register i.e. Activate a provider.
 
-    Each provider needs to call this function with loaded = True to register itself
-    as a supported repo provider.
+    Each provider needs to call this function with loaded = True to register
+    itself as a supported repo provider.
 
     Keyword arguments:
     name -- Name of the provider.

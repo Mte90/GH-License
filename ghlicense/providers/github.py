@@ -10,14 +10,14 @@ except ImportError:
     # If the module failed to import, then this github provider can NOT be registered.
     PROVIDER_PLUGIN_LOADED = False
 
-
 class GitHubProvider(repobase.Provider):
     """Derived a GithubProvider from repobase.Provider."""
 
     def __init__(self, username):
         """Initialise the GithubProvider using the github module.
 
-        A handle to the github user is obtained by calling github.get_user(username)
+        A handle to the github user is obtained by calling
+        github.get_user(username)
 
         Keyword arguments:
         username -- The Github username.
