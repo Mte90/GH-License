@@ -8,6 +8,7 @@ from argparse import REMAINDER, ArgumentParser, RawTextHelpFormatter
 from configparser import ConfigParser
 
 from ghlicense import repobase
+from ghlicense.providers import *
 
 ENHANCED_DESCRIPTION = """
     This script scans every repo of the specified user for a license
@@ -84,7 +85,8 @@ def update_license(url, name, badge):
     # If a README file by any of these names exists
     # then add License details and badge to it.
     readme_names = ['README.md', 'Readme.md', 'README.txt', 'readme',
-                    'README', 'readme.txt', 'readme.md', 'read_me', 'Read_me', 'READ_ME']
+                    'README', 'readme.txt', 'readme.md', 'read_me', 'Read_me',
+                    'READ_ME']
     for readme_name in readme_names:
 
         if os.path.isfile(readme_name):

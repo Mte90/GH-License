@@ -39,14 +39,10 @@ For example:
    |_ 03-something_else
 ```
 
-Additionally, colored logging is supported if the package colorlog is
-installed.
-
 https://gist.github.com/revolter/99ea1acd48ad7c2d898bca2bc58f37bc
 """
 
 from sys import argv
-from logging import getLogger
 from subprocess import Popen, PIPE
 from os import access, listdir, X_OK
 from os.path import isfile, isdir, abspath, normpath, dirname, join, basename, splitext
@@ -65,55 +61,20 @@ GIT_HOOKS = [
 ]
 
 
-def setup_logging():
-    """
-    Setup logging with support for colored output if available.
-    """
-
-    from logging import basicConfig, DEBUG
-
-    FORMAT = (
-        '  %(log_color)s%(levelname)-8s%(reset)s | '
-        '%(log_color)s%(message)s%(reset)s'
-    )
-
-    logging_kwargs = {
-        'level': DEBUG,
-    }
-
-    try:
-        from logging import StreamHandler
-        from colorlog import ColoredFormatter
-
-        stream = StreamHandler()
-        stream.setFormatter(ColoredFormatter(FORMAT))
-
-        logging_kwargs['handlers'] = [stream]
-
-    except ImportError:
-        pass
-
-    basicConfig(**logging_kwargs)
-
-
 def main():
     """
     Execute subhooks for the assigned hook type.
     """
-    setup_logging()
-    log = getLogger(basename(__file__))
 
     # Check multihooks facing what hook type
     hook_type = splitext(basename(__file__))[0]
     if hook_type not in GIT_HOOKS:
-        log.fatal('Unknown hook type: {}'.format(hook_type))
         exit(1)
 
     # Lookup for sub-hooks directory
     root = normpath(abspath(dirname(__file__)))
     hooks_dir = join(root, '{}.d'.format(hook_type))
     if not isdir(hooks_dir):
-        log.warning('No such directory: {}'.format(hooks_dir))
         exit(0)
 
     # Gather scripts to call
@@ -122,13 +83,11 @@ def main():
         [h for h in files if isfile(h) and access(h, X_OK)]
     )
     if not hooks:
-        log.warning('No sub-hooks found for {}.'.format(hook_type))
         exit(0)
 
     # Execute hooks
     for h in hooks:
         hook_id = '{}.d/{}'.format(hook_type, basename(h))
-        log.info('Running hook {}...'.format(hook_id))
 
         proc = Popen([h] + argv[1:], stdout=PIPE, stderr=PIPE)
         stdout_raw, stderr_raw = proc.communicate()
@@ -137,13 +96,11 @@ def main():
         stderr = stderr_raw.decode('utf-8').strip()
 
         if stdout:
-            log.info(stdout)
+            print(stdout)
         if stderr:
-            log.error(stderr)
+            print(stderr)
 
-        # Log errors if a hook failed
         if proc.returncode != 0:
-            log.error('Hook {} failed. Aborting...'.format(hook_id))
             exit(proc.returncode)
 
 
