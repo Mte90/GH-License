@@ -234,7 +234,11 @@ def print_license_list():
                      '\n\n  UNLICENSE\n'
                      '\tReleases code into the public domain.'
                      '\n\n  MIT\n'
-                     '\tA short, permissive software license.\n\n')
+                     '\tA short, permissive software license.'
+                     '\n\n  EUPL\n'
+                     '\tThe “European Union Public Licence” (EUPL) The EUPL is the first\n'
+                     '\tEuropean Free/Open Source Software (F/OSS) licence. It has been\n'
+                     '\tcreated on the initiative of the European Commission.\n\n')
 
 
 def main():
@@ -388,6 +392,9 @@ def main():
         elif chosen_license == 'MIT':
             update_license("https://spdx.org/licenses/MIT.txt", chosen_license,
                            '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
+        elif chosen_license == 'EUPL':
+            update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
+                           '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
         else:
             print('License {license} not found!'.format(license=chosen_license))
             sys.exit(1)
