@@ -87,8 +87,6 @@ def main():
 
     # Execute hooks
     for h in hooks:
-        hook_id = '{}.d/{}'.format(hook_type, basename(h))
-
         proc = Popen([h] + argv[1:], stdout=PIPE, stderr=PIPE)
         stdout_raw, stderr_raw = proc.communicate()
 
