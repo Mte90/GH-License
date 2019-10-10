@@ -396,7 +396,10 @@ def main():
             update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
                            '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
         else:
-            print('No license provided'.format(license=chosen_license))
+            if type(chosen_license) is bool:
+                print('No license provided')
+            else:
+                print('License {license} not found!'.format(license=chosen_license))
             sys.exit(1)
 
         # Save the three most recently used licenses (remove duplicates, keep order)
