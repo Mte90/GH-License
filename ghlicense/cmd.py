@@ -113,7 +113,7 @@ def update_license(url, name, badge):
                 os.system('git add ' + readme_name)
                 os.system('git commit -m "Added ' + name + ' LICENSE"')
                 # If a remote repository exists attempt to push change to it
-                if ARGS.origin != None:
+                if ARGS.origin is not None:
                     os.system('git push ' + ARGS.origin + ' master')
                 else:
                     os.system('git push origin master')
@@ -167,7 +167,7 @@ def pick_license_from_last_used(last_used_licenses):
     last_used_licenses: a sequence of the three most recently used licenses
     in order of most recently used first.
     """
-    print("You have not selected a license, ", end='')
+    print('You have not selected a license, ', end='')
     if last_used_licenses:
         print("the last licenses you've used are: ")
         for i, license_name in enumerate(last_used_licenses):
