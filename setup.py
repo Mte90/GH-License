@@ -17,7 +17,7 @@ setup(
     license="GPLv3",
     description="Scan github, bitbucket or other providers repositories for missing license files and add them",
     download_url='https://github.com/Mte90/GH-License/tarball/0.2.7',
-    packages=find_packages(),
+    packages=find_packages(exclude=["setup", "setup.*"]),
     entry_points={
         'console_scripts': [
             'gh-license=ghlicense.cmd:main'
