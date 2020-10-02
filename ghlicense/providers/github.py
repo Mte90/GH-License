@@ -35,7 +35,7 @@ class GitHubProvider(repobase.Provider):
         # Iterate over the list of "github repos" and
         # prepare a list of "repos" with properties of interest initialised.
         for g_repo in g_repos:
-            raw_base_url = 'http://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '%s/'
+            raw_base_url = 'http://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '/'
             repo_url = 'http://github.com/' + g_repo.full_name
             repos.append(repobase.Repo(g_repo.full_name, raw_base_url, repo_url,
                                        g_repo.default_branch, g_repo.fork))
