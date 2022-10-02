@@ -44,6 +44,10 @@ PARSER.add_argument(
     "--report", help="The report filename for scan (optional)", action="store")
 PARSER.add_argument(
     "--origin", help="The origin of the git repo (optional)", action="store")
+PARSER.add_argument(
+    "--html" , help = "Prints the report file into a html file", action="store"
+)
+
 PARSER.add_argument('args', nargs=REMAINDER)
 
 ARGS = PARSER.parse_args()
@@ -333,6 +337,13 @@ def main():
             "Repos without License and forked: " + str(count_forked) + "\n")
         report_file.write("Total Repos: " +
                           str(count_no_license + count_license) + "\n")
+        
+        if ARGS.html is not None: 
+            with open("report.html", "w") as e:
+                for lines in report_file.readlines():
+                    e.write("<pre>" + lines + "</pre> <br>\n")
+            print("Report.html has been created")                
+                    
         report_file.close()
 
     # If the script was launched in "licenselist" mode
