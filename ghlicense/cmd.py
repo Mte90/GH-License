@@ -256,15 +256,15 @@ def main():
 
         # Create the specified license report file
         # (or use the default license report file name, if one is not specified)
+        report_file_name = 'default'
         if ARGS.report is None:
-            report_file = open(ARGS.scan + '-' +
-                               ARGS.provider + '-license-report', 'w')
-            print(' No report file name found, using default "' +
-                  ARGS.scan + '-' + ARGS.provider + '-license-report"!')
+            report_file_name = f"{ARGS.scan}-{ARGS.provider}-license-report"
+            print(f' No report file name found, using default "{report_file_name}"')
         else:
-            report_file = open(ARGS.report, 'w')
+            report_file_name = ARGS.report
 
         # Start scanning user's public repos
+        report_file = open(report_file_name, 'w')
         report_file.write('Last scan done on: ' + time.strftime("%c") + "\n")
         report_file.write('Scan report of user: ' + ARGS.scan + "\n\n")
         count_total = len(list(user.get_repos()))
