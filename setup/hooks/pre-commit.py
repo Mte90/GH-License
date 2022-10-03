@@ -73,7 +73,7 @@ def main():
 
     # Lookup for sub-hooks directory
     root = normpath(abspath(dirname(__file__)))
-    hooks_dir = join(root, '{}.d'.format(hook_type))
+    hooks_dir = join(root, f'{hook_type}.d')
     if not isdir(hooks_dir):
         exit(0)
 

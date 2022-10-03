@@ -170,12 +170,13 @@ def pick_license_from_last_used(last_used_licenses):
     if last_used_licenses:
         print("the last licenses you've used are: ")
         for i, license_name in enumerate(last_used_licenses):
-            print('[{num}]{license}'.format(
-                num=i + 1, license=license_name), end='')
+            print(f"[{i+1}]{license_name}", end="")
             if i < len(last_used_licenses) - 1:
                 print(', ', end='')
         print(
-            "\nPress [1], [2], and so on to download the license,\nor e", end='')
+            "\nPress [1], [2], and so on to download the license,\nor e",
+            end=''
+        )
     else:
         print("you also have no previously used licenses.\n", end='')
 
@@ -391,7 +392,7 @@ def main():
             if isinstance(chosen_license) is bool:
                 print('No license provided')
             else:
-                print('License {license} not found!'.format(license=chosen_license))
+                print(f"License {chosen_license} not found!")
             sys.exit(1)
 
         # Save the three most recently used licenses (remove duplicates, keep order)
