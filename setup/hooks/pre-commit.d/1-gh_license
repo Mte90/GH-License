@@ -6,12 +6,9 @@ import sys
 
 
 def self_remove():
-    self_remove_command = (
-        'python -c '
-        '"import os, time;'
-        'time.sleep(1);'
-        'os.remove(\'{}\');"'
-    ).format(sys.argv[0])
+    self_remove_command = f"""
+        python -c "import os, time; time.sleep(1); os.remove('{sys.argv[0]}');")
+    """
 
     subprocess.Popen(self_remove_command, shell=True)
 
@@ -46,7 +43,7 @@ def main():
             'Add one by running "gh-license --license <license name>"\n'
         )
 
-        print('{}{}{}'.format(red_color, warning_message, reset_color))
+        print(f'{red_color}{warning_message}{reset_color}')
     else:
         self_remove()
 

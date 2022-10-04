@@ -12,10 +12,10 @@ class PostDevelopCommand(develop):
     def run(self):
         main_path = os.path.expanduser("~/.gh-license")
 
-        git_templates_path = "{}/git-templates".format(main_path)
-        git_hooks_path = "{}/hooks".format(git_templates_path)
+        git_templates_path = f"{main_path}/git-templates"
+        git_hooks_path = f"{git_templates_path}/hooks"
 
-        config_path = "{}/config.ini".format(main_path)
+        config_path = f"{main_path}/config.ini"
 
         # copy the hooks folder in our git template folder
         shutil.copytree("setup/hooks", git_hooks_path)

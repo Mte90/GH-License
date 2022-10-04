@@ -75,12 +75,12 @@ def update_progress_bar(current, total):
 def update_license(url, name, badge):
     """Update the project with the specified License text and badge."""
 
-    print('License ' + name + ' download in progress.')
+    print(f"License {name} download in progress.")
     # If a file "LICENSE" does NOT exist in the repo
     if not os.path.isfile("LICENSE"):
         # Obtain the License text and save it as the file LICENSE
         urllib.request.urlretrieve(url, "LICENSE")
-        print('License ' + name + ' saved as file LICENSE.')
+        print(f"License {name} saved as file LICENSE.")
 
     # If a README file by any of these names exists
     # then add License details and badge to it.
@@ -101,20 +101,19 @@ def update_license(url, name, badge):
             if text and text[0][0] == '#':
                 readme_file.write(text[0])
                 text.pop(0)
-            readme_file.write('[![License]' + badge + "   \n")
+            readme_file.write(f"[![License]{badge}   \n")
             readme_file.write("".join(text))
             readme_file.close()
-            print('Added badge license for ' +
-                  name + ' in ' + readme_name + '.')
+            print(f"Added badge license for {name} in {readme_name}.")
 
             # If within a git repository, commit the above changes to current branch
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
-                os.system('git add ' + readme_name)
-                os.system('git commit -m "Added ' + name + ' LICENSE"')
+                os.system(f"git add {readme_name}")
+                os.system(f"git commit -m 'Added {name} LICENSE'")
                 # If a remote repository exists attempt to push change to it
                 if ARGS.origin is not None:
-                    os.system('git push ' + ARGS.origin + ' master')
+                    os.system(f"git push {ARGS.origin} master")
                 else:
                     os.system('git push origin master')
 
@@ -171,12 +170,13 @@ def pick_license_from_last_used(last_used_licenses):
     if last_used_licenses:
         print("the last licenses you've used are: ")
         for i, license_name in enumerate(last_used_licenses):
-            print('[{num}]{license}'.format(
-                num=i + 1, license=license_name), end='')
+            print(f"[{i+1}]{license_name}", end="")
             if i < len(last_used_licenses) - 1:
                 print(', ', end='')
         print(
-            "\nPress [1], [2], and so on to download the license,\nor e", end='')
+            "\nPress [1], [2], and so on to download the license,\nor e",
+            end=''
+        )
     else:
         print("you also have no previously used licenses.\n", end='')
 
@@ -298,23 +298,19 @@ def main():
                     if err.code == 404:
                         missing = True
                 else:
-                    print_license_status(
-                        ' ✓ Found: ' + license_url + license_file)
-                    report_file.write(
-                        'Repo: ' + repo.full_name + "\nURL: " + repo_url + " \n")
-                    report_file.write(
-                        ' ✓ Found: ' + license_url + license_file + " \n")
+                    license_status = f"✓ Found: {license_url}{license_file}"
+                    print_license_status(license_status)
+                    report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
+                    report_file.write(f"{license_status} \n")
                     missing = False
                     count_license += 1
                     break
 
             if missing:
-                print_license_status(
-                    ' ✗ Missing the license, this repo is proprietary!')
-                report_file.write('Repo: ' + repo.full_name +
-                                  "\nURL: " + repo_url + " \n")
-                report_file.write(
-                    ' ✗ Missing the license, this repo is proprietary!\n')
+                license_status = "✗ Missing the license, this repo is proprietary!"
+                print_license_status(license_status)
+                report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
+                report_file.write(f"{license_status} \n")
                 count_no_license += 1
                 if repo.fork:
                     print(' ! Is a fork, check the original or create a PR!')
@@ -326,13 +322,10 @@ def main():
         # Update progress based on % of repos scanned
         print("|" + "#" * 40 + "| Done 100%")
         report_file.write("Statistics: \n")
-        report_file.write("Repos with License: " + str(count_license) + "\n")
-        report_file.write("Repos without License: " +
-                          str(count_no_license) + "\n")
-        report_file.write(
-            "Repos without License and forked: " + str(count_forked) + "\n")
-        report_file.write("Total Repos: " +
-                          str(count_no_license + count_license) + "\n")
+        report_file.write(f"Repos with License: {count_license}\n")
+        report_file.write(f"Repos without License: {count_no_license}\n")
+        report_file.write(f"Repos without License and forked: {count_forked}\n")
+        report_file.write(f"Total Repos: {count_no_license + count_license}\n")
         report_file.close()
 
     # If the script was launched in "licenselist" mode
@@ -399,7 +392,7 @@ def main():
             if isinstance(chosen_license) is bool:
                 print('No license provided')
             else:
-                print('License {license} not found!'.format(license=chosen_license))
+                print(f"License {chosen_license} not found!")
             sys.exit(1)
 
         # Save the three most recently used licenses (remove duplicates, keep order)
