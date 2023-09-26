@@ -1,4 +1,5 @@
 # GitHosting License
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)   
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6705b4282fd459da427e24649081510)](https://www.codacy.com/app/mte90net/GH-License?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Mte90/GH-License&amp;utm_campaign=Badge_Grade)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FMte90%2FGH-License.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FMte90%2FGH-License?ref=badge_shield)
 
