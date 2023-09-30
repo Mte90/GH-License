@@ -105,15 +105,10 @@ def update_license(url, name, badge):
             readme_file.write("".join(text))
             readme_file.close()
             print(f"Added badge license for {name} in {readme_name}.")
-
             # If within a git repository, commit the above changes to current branch
             # Verify which is the current branch
             try:
-                # os.popen() runs the command and capture its output as a file-like object \
-                # while read() will read the output of the command
                 current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
-                # let's encode it and decode the UTF-8 bytes to a stringa \
-                # and strip whitespaces to get the branch name
                 current_branch = current_branch_bytes.decode("utf-8").strip()
                 print(f"Current Git branch is: {current_branch}")
             except Exception as e:
