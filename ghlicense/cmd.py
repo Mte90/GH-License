@@ -105,18 +105,23 @@ def update_license(url, name, badge):
             readme_file.write("".join(text))
             readme_file.close()
             print(f"Added badge license for {name} in {readme_name}.")
-
             # If within a git repository, commit the above changes to current branch
+            # Verify which is the current branch
+            try:
+                current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
+                current_branch = current_branch_bytes.decode("utf-8").strip()
+                print(f"Current Git branch is: {current_branch}")
+            except Exception as e:
+                print(f"Error: {e}")
             if os.path.isdir('.git') and os.path.exists('LICENSE'):
                 os.system('git add LICENSE')
                 os.system(f"git add {readme_name}")
                 os.system(f"git commit -m 'Added {name} LICENSE'")
-                # If a remote repository exists attempt to push change to it
+                # If a remote repository exists, attempt to push changes to it
                 if ARGS.origin is not None:
-                    os.system(f"git push {ARGS.origin} master")
+                    os.system(f"git push {ARGS.origin} {current_branch}")
                 else:
-                    os.system('git push origin master')
-
+                    os.system(f"git push origin {current_branch}")
 
 def save_last_used_licenses(last_used_licenses):
     """
@@ -389,7 +394,7 @@ def main():
             update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
                            '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
         else:
-            if isinstance(chosen_license) is bool:
+            if isinstance(chosen_license, bool):
                 print('No license provided')
             else:
                 print(f"License {chosen_license} not found!")
@@ -413,3 +418,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

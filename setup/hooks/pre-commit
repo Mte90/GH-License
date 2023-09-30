@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-PATH="/usr/local/bin:$PATH"
-
-python .git/hooks/pre-commit.py
