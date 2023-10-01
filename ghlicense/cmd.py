@@ -388,8 +388,8 @@ def main():
         elif chosen_license == 'EUPL':
             update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
                            '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
-        else:
-            if isinstance(chosen_license) is bool:
+       else:
+            if isinstance(chosen_license, bool):
                 print('No license provided')
             else:
                 print(f"License {chosen_license} not found!")
