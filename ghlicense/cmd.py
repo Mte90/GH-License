@@ -31,13 +31,16 @@ ERR_PROVIDERS_TXT = "(errored providers: %s)" % ", ".join(
     DISABLED_PROVIDERS) if DISABLED_PROVIDERS else ""
 
 PARSER.add_argument(
-    "--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
+    "--scan", help="Scan repo of the user, arguments: [User_nick]", \
+    action="store")
 PARSER.add_argument(
-    "--license", help="Download a license file, arguments: [License_name]", nargs='?', const=True)
+    "--license", help="Download a license file, arguments: [License_name]", \
+    nargs='?', const=True)
 PARSER.add_argument(
     "--licenselist", help="Show licenses available", action="store_true")
 PARSER.add_argument("--provider",
-                    help="Repository provider. Defaults to github. Available providers: %s %s" %
+                    help="Repository provider. Defaults to github. \
+                    Available providers: %s %s" %
                     (", ".join(ENABLED_PROVIDERS), ERR_PROVIDERS_TXT),
                     action="store", default="github")
 PARSER.add_argument(
@@ -106,11 +109,12 @@ def update_license(url, name, badge):
             readme_file.close()
             print(f"Added badge license for {name} in {readme_name}.")
 
-            # If within a git repository, commit the above changes to current branch
+            # If within a git repo, commit the above changes to current branch
             # Verify which is the current branch
             try:
-                c_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
-                current_branch = c_branch_bytes.decode("utf-8").strip()
+                open_branch = os.popen("git rev-parse --abbrev-ref HEAD")
+                read_branch = open_branch.read().encode("utf-8")
+                current_branch = read_branch.decode("utf-8").strip()
                 print(f"Current Git branch is: {current_branch}")
             except Exception as e:
                 print(f"Error: {e}")
