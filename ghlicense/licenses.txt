@@ -1,0 +1,53 @@
+GPLv2
+    You may copy, distribute and modify the software.
+    Any modifications must also be made available under
+    the GPL along with build & install instructions.
+
+GPLv3
+    Same of GPLv2 but easily integrable with other licenses.
+
+LGPLv3
+    This license is mainly applied to libraries.
+    Derivatives works that use LGPL library can use other licenses.
+
+AGPLv3
+    The AGPL license differs from the other GNU licenses in that it was
+    built for network software, the AGPL is the GPL of the web.
+
+FDLv1.3
+    This license is for a manual, textbook, or other
+    functional and useful document "free" in the sense of freedom.
+
+Apachev2
+    You can do what you like with the software, as long as you include the
+    required notices.
+
+CC-BY
+    This is the ‘standard’ creative commons.
+    It should not be used for the software.
+
+BSDv2
+    The BSD 2-clause license allows you almost unlimited freedom.
+
+BSDv3
+    The BSD 3-clause license allows you almost unlimited freedom.
+
+BSDv4
+    The BSD 4-clause license is a permissive license with a special 
+    obligation to credit the copyright holders of the software.
+
+MPLv2
+    MPL is a copyleft license. You must make the source code for any
+    of your changes available under MPL, but you can combine the
+    MPL software with proprietary code.
+
+UNLICENSE
+    Releases code into the public domain.
+
+MIT
+    A short, permissive software license.
+
+EUPL
+    The “European Union Public Licence” (EUPL) The EUPL is the first
+    European Free/Open Source Software (F/OSS) licence. It has been
+    created on the initiative of the European Commission.
