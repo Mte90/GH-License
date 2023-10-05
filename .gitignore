@@ -91,3 +91,8 @@ ENV/
 
 # macOS
 *.DS_Store
+
+# fz
+
+requirements-venv.txt
+bin/
