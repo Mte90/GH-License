@@ -8,7 +8,7 @@ from argparse import REMAINDER, ArgumentParser, RawTextHelpFormatter
 from configparser import ConfigParser
 
 from ghlicense import repobase
-from ghlicense.providers import *
+from ghlicense.providers import github, bitbucket
 
 ENHANCED_DESCRIPTION = """
     This script scans every repo of the specified user for a license
@@ -109,8 +109,12 @@ def update_license(url, name, badge):
             # If within a git repository, commit the above changes to current branch
             # Verify which is the current branch
             try:
-                c_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
-                current_branch = c_branch_bytes.decode("utf-8").strip()
+                # os.popen() runs the command and capture its output as a file-like object \
+                # while read() will read the output of the command
+                current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
+                # let's encode it and decode the UTF-8 bytes to a stringa \
+                # and strip whitespaces to get the branch name
+                current_branch = current_branch_bytes.decode("utf-8").strip()
                 print(f"Current Git branch is: {current_branch}")
             except Exception as e:
                 print(f"Error: {e}")
@@ -204,48 +208,32 @@ def pick_license_from_last_used(last_used_licenses):
         return license_input
 
 
+# Get the current directory of the script
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to licenses.txt
+licenses_path = os.path.join(current_directory, 'licenses.txt')
+
+# Use the licenses_path variable in your code
+with open(licenses_path, 'r') as file:
+    licenses = file.read()
+    sys.stderr.write(f'{licenses}\n')
+
+
 def print_license_list():
-    """Print a hardcoded list of known Licenses"""
-    sys.stderr.write('\n  GPLv2\n'
-                     '\tYou may copy, distribute and modify the software.\n'
-                     '\tAny modifications must also be made available under\n'
-                     '\tthe GPL along with build & install instructions.'
-                     '\n\n  GPLv3\n'
-                     '\tSame of GPLv2 but easily integrable with other licenses.'
-                     '\n\n  LGPLv3\n'
-                     '\tThis license is mainly applied to libraries.\n'
-                     '\tDerivatives works that use LGPL library can use other licenses.'
-                     '\n\n  AGPLv3\n'
-                     '\tThe AGPL license differs from the other GNU licenses in that it was\n'
-                     '\tbuilt for network software, the AGPL is the GPL of the web.'
-                     '\n\n  FDLv1.3\n'
-                     '\tThis license is for a manual, textbook, or other\n'
-                     '\tfunctional and useful document "free" in the sense of freedom.'
-                     '\n\n  Apachev2\n'
-                     '\tYou can do what you like with the software, as long as you include the\n'
-                     '\trequired notices.'
-                     '\n\n  CC-BY\n'
-                     '\tThis is the ‘standard’ creative commons.\n'
-                     '\tIt should not be used for the software.'
-                     '\n\n  BSDv2\n'
-                     '\tThe BSD 2-clause license allows you almost unlimited freedom.'
-                     '\n\n  BSDv3\n'
-                     '\tThe BSD 3-clause license allows you almost unlimited freedom.'
-                     '\n\n  BSDv4\n'
-                     '\tThe BSD 4-clause license is a permissive license with a special \n'
-                     '\tobligation to credit the copyright holders of the software.'
-                     '\n\n  MPLv2\n'
-                     '\tMPL is a copyleft license. You must make the source code for any\n'
-                     '\tof your changes available under MPL, but you can combine the\n'
-                     '\tMPL software with proprietary code.'
-                     '\n\n  UNLICENSE\n'
-                     '\tReleases code into the public domain.'
-                     '\n\n  MIT\n'
-                     '\tA short, permissive software license.'
-                     '\n\n  EUPL\n'
-                     '\tThe “European Union Public Licence” (EUPL) The EUPL is the first\n'
-                     '\tEuropean Free/Open Source Software (F/OSS) licence. It has been\n'
-                     '\tcreated on the initiative of the European Commission.\n\n')
+    licenses_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'licenses.txt')
+    try:
+        with open(licenses_path, 'r') as file:
+            licenses = file.read()
+            sys.stderr.write(f'{licenses}\n')
+    except FileNotFoundError:
+        sys.stderr.write('licenses.txt file not found.\n')
+
+
+if __name__ == '__main__':
+    print_license_list()
+
+print_license_list()
 
 
 def main():
@@ -322,8 +310,8 @@ def main():
                 if repo.fork:
                     print(' ! Is a fork, check the original or create a PR!')
                     report_file.write(' ! Is a fork, check the original or create a PR!\n')
-                    count_forked+=1
-            count_current+=1
+                    count_forked += 1
+            count_current += 1
             report_file.write("\n")
 
         # Update progress based on % of repos scanned
@@ -395,7 +383,7 @@ def main():
         elif chosen_license == 'EUPL':
             update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
                            '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
-       else:
+        else:
             if isinstance(chosen_license, bool):
                 print('No license provided')
             else:
