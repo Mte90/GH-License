@@ -6,6 +6,7 @@ import time
 import urllib.request
 from argparse import REMAINDER, ArgumentParser, RawTextHelpFormatter
 from configparser import ConfigParser
+import json
 
 from ghlicense import repobase
 from ghlicense.providers import github, bitbucket
@@ -54,6 +55,9 @@ if len(sys.argv) < 2:
     PARSER.print_help()
     sys.exit(0)
 
+current_directory = os.path.dirname(os.path.abspath(__file__))
+licenses_path = os.path.join(current_directory, 'licenses.json')
+
 
 def print_license_status(msg):
     """Print license status messages with a progress bar."""
@@ -74,7 +78,6 @@ def update_progress_bar(current, total):
 
 def update_license(url, name, badge):
     """Update the project with the specified License text and badge."""
-
     print(f"License {name} download in progress.")
     # If a file "LICENSE" does NOT exist in the repo
     if not os.path.isfile("LICENSE"):
@@ -211,29 +214,41 @@ def pick_license_from_last_used(last_used_licenses):
 # Get the current directory of the script
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Construct the path to licenses.txt
-licenses_path = os.path.join(current_directory, 'licenses.txt')
-
-# Use the licenses_path variable in your code
-with open(licenses_path, 'r') as file:
-    licenses = file.read()
-    sys.stderr.write(f'{licenses}\n')
-
 
 def print_license_list():
-    licenses_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'licenses.txt')
     try:
         with open(licenses_path, 'r') as file:
-            licenses = file.read()
-            sys.stderr.write(f'{licenses}\n')
+            licenses_data = json.load(file)
+        for license in licenses_data:
+            name = license['name']
+            description = license['description']
+            print(f'{name}\n')
+            print(f'    {description}\n\n')
     except FileNotFoundError:
-        sys.stderr.write('licenses.txt file not found.\n')
+        sys.stderr.write('licenses.json file not found.\n')
 
 
-if __name__ == '__main__':
-    print_license_list()
-
-print_license_list()
+def update_license_from_json(chosen_license):
+    print("Updating license from JSON...")
+    # Read licenses from JSON file
+    with open(licenses_path, 'r') as file:
+        licenses = json.load(file)
+    # Check if chosen_license exists in licenses
+    license_info = None
+    for license in licenses:
+        if license['name'] == chosen_license:
+            license_info = license
+            break
+    if license_info:
+        print(f"License found: {license_info['name']}")
+        update_license(license_info['link'], chosen_license, license_info['badge'])
+        print("License update successful.")
+    else:
+        if isinstance(chosen_license, bool):
+            print('No license provided')
+        else:
+            print(f"License {chosen_license} not found!")
+        sys.exit(1)
 
 
 def main():
@@ -340,55 +355,8 @@ def main():
         if not ARGS.license:
             chosen_license = pick_license_from_last_used(last_used_licenses)
 
-        # Check which license is being requested and update accordingly
-        if chosen_license == 'GPLv2':
-            update_license("http://www.gnu.org/licenses/gpl-2.0.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)')
-        elif chosen_license == 'GPLv3':
-            update_license("http://www.gnu.org/licenses/gpl-3.0.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)')
-        elif chosen_license == 'LGPLv3':
-            update_license("http://www.gnu.org/licenses/lgpl-3.0.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)')
-        elif chosen_license == 'AGPLv3':
-            update_license("http://www.gnu.org/licenses/agpl-3.0.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)')
-        elif chosen_license == 'FDLv1.3':
-            update_license("http://www.gnu.org/licenses/fdl-1.3.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-FDL%20v1.3-blue.svg)](http://www.gnu.org/licenses/fdl-1.3)')
-        elif chosen_license == 'Apachev2':
-            update_license("http://www.opensource.apple.com/source/apache2/apache2-19/apache2.txt?txt", chosen_license,
-                           '(https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)')
-        elif chosen_license == 'CC-BY':
-            update_license("http://creativecommons.org/licenses/by/3.0/legalcode.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)(http://creativecommons.org/licenses/by/4.0/)')
-        elif chosen_license == 'BSDv2':
-            update_license("https://spdx.org/licenses/BSD-2-Clause.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-BSD%20v2-blue.svg)](https://spdx.org/licenses/BSD-2-Clause)')
-        elif chosen_license == 'BSDv3':
-            update_license("https://spdx.org/licenses/BSD-3-Clause.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-BSD%20v3-blue.svg)](https://spdx.org/licenses/BSD-3-Clause)')
-        elif chosen_license == 'BSDv4':
-            update_license("https://spdx.org/licenses/BSD-4-Clause.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-BSD%20v4-blue.svg)](https://spdx.org/licenses/BSD-4-Clause)')
-        elif chosen_license == 'MPLv2':
-            update_license("https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-MozillaPublicLicense%20v2-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0)')
-        elif chosen_license == 'UNLICENSE':
-            update_license("http://unlicense.org/UNLICENSE", chosen_license,
-                           '(https://img.shields.io/badge/License-UNLICENSE%20v1-blue.svg)](http://unlicense.org/UNLICENSE)')
-        elif chosen_license == 'MIT':
-            update_license("https://spdx.org/licenses/MIT.txt", chosen_license,
-                           '(https://img.shields.io/badge/License-MIT%20v1-blue.svg)](https://spdx.org/licenses/MIT.html#licenseText)')
-        elif chosen_license == 'EUPL':
-            update_license("https://joinup.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20EN(1).txt", chosen_license,
-                           '(https://img.shields.io/badge/License-EUPL%20v1.1-blue.svg)](https://joinup.ec.europa.eu/page/eupl-guidelines-faq-infographics)')
-        else:
-            if isinstance(chosen_license, bool):
-                print('No license provided')
-            else:
-                print(f"License {chosen_license} not found!")
-            sys.exit(1)
+        # Call the update_license_from_json function
+        update_license_from_json(chosen_license)
 
         # Save the three most recently used licenses (remove duplicates, keep order)
         last_used_licenses.insert(0, chosen_license)
@@ -405,6 +373,5 @@ def main():
 
         save_last_used_licenses(unique_last_used[:3])
 
-
-if __name__ == "__main__":
-    main()
+        if __name__ == "__main__":
+            main()
