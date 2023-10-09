@@ -373,5 +373,6 @@ def main():
 
         save_last_used_licenses(unique_last_used[:3])
 
-        if __name__ == "__main__":
-            main()
+
+if __name__ == "__main__":
+    main()
