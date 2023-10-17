@@ -37,7 +37,7 @@ With this command you will get a report in a file called Mte90-bitbucket-license
 
 With this command you will get a report in a file called my-report
 
-    gh-license --licenselist
+    gh-license --license-list
 
 With this command will be showed the licenses avalaible
 
@@ -50,6 +50,3 @@ With this command, a GPLv3 license will be downloaded, a shields will be added i
 With this command the commit will be pushed on the upstream origin
 
 [Example of output](https://gist.github.com/Mte90/4c5ec76c94afa61983f8)
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FMte90%2FGH-License.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FMte90%2FGH-License?ref=badge_large)

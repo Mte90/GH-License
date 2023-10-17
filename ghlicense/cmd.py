@@ -373,6 +373,10 @@ def main():
 
         save_last_used_licenses(unique_last_used[:3])
 
+    elif ARGS.provider:
+        print(f'This parameter needs to be used with the others!')
+        repo_provider = repobase.get_provider(ARGS.provider)
+
 
 if __name__ == "__main__":
     main()
