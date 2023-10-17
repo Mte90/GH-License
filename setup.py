@@ -16,7 +16,7 @@ setup(
     install_requires=open(os.path.join(BASE_DIR, "requirements.txt")).readlines(),
     license="GPLv3",
     description="Scan github, bitbucket or other providers repositories for missing license files and add them",
-    download_url='https://github.com/Mte90/GH-License/tarball/0.2.7',
+    download_url='https://github.com/Mte90/GH-License/tarball/0.2.9',
     packages=find_packages(exclude=["setup", "setup.*"]),
     entry_points={
         'console_scripts': [
