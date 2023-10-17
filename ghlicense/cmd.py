@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import json
 
 from ghlicense import repobase
-from ghlicense.providers import github, bitbucket
+from ghlicense.providers import github, bitbucket, gitlab
 
 ENHANCED_DESCRIPTION = """
     This script scans every repo of the specified user for a license
@@ -375,7 +375,7 @@ def main():
 
     elif ARGS.provider:
         print(f'This parameter needs to be used with the others!')
-        repo_provider = repobase.get_provider(ARGS.provider)
+        repobase.get_provider(ARGS.provider)
 
 
 if __name__ == "__main__":
