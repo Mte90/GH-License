@@ -1,7 +1,12 @@
 # GitHosting License
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-This script scans every repo of a user (on GitHub/Bitbucket/GitLab or other providers available) for a license file, downloads a license to the project folder, adds a license badge in the readme of the project and include git hooks to check if your project has one.
+This script scans every repo of a user (on GitHub/Bitbucket/GitLab or other providers available) for:
+
+* Check if include a license file
+* Download a license to the project folder (automatically execute a `git commit`)
+* Adds a license badge in the readme (automatically execute a `git commit`)
+* Include git hooks to check if your project has one.
 
 Remember, without a license file your project is proprietary even if it is online!
 
