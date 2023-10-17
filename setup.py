@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name="gh-license",
-    version="0.2.8",
+    version="0.2.9",
     author="Mte90",
     author_email="mte90net@gmail.com",
     url="https://github.com/Mte90/GH-License",
@@ -17,6 +17,7 @@ setup(
     license="GPLv3",
     description="Scan github, bitbucket or other providers repositories for missing license files and add them",
     download_url='https://github.com/Mte90/GH-License/tarball/0.2.9',
+    package_data={"ghlicense": ["*.json"]},
     packages=find_packages(exclude=["setup", "setup.*"]),
     entry_points={
         'console_scripts': [

@@ -36,7 +36,7 @@ PARSER.add_argument(
 PARSER.add_argument(
     "--license", help="Download a license file, arguments: [License_name]", nargs='?', const=True)
 PARSER.add_argument(
-    "--licenselist", help="Show licenses available", action="store_true")
+    "--licenselist", "--license-list", help="Show licenses available", action="store_true")
 PARSER.add_argument("--provider",
                     help="Repository provider. Defaults to github. Available providers: %s %s" %
                     (", ".join(ENABLED_PROVIDERS), ERR_PROVIDERS_TXT),
@@ -222,8 +222,8 @@ def print_license_list():
         for license in licenses_data:
             name = license['name']
             description = license['description']
-            print(f'{name}\n')
-            print(f'    {description}\n\n')
+            print(f'{name}')
+            print(f'    {description}')
     except FileNotFoundError:
         sys.stderr.write('licenses.json file not found.\n')
 

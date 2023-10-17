@@ -1,3 +1,4 @@
 include LICENSE
 include requirements.txt
+include ghlicense/licenses.json
 recursive-include setup *.py
