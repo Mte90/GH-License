@@ -1,10 +1,9 @@
 # GitHosting License
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6705b4282fd459da427e24649081510)](https://www.codacy.com/app/mte90net/GH-License?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Mte90/GH-License&amp;utm_campaign=Badge_Grade)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FMte90%2FGH-License.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FMte90%2FGH-License?ref=badge_shield)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-This script scans every repo of a user (on GitHub Bitbucket or other providers available) for a license file, downloads a license to the project folder, adds a license badge in the readme of the project and include git hooks to check if your project has one.
+This script scans every repo of a user (on GitHub/Bitbucket/GitLab or other providers available) for a license file, downloads a license to the project folder, adds a license badge in the readme of the project and include git hooks to check if your project has one.
 
-Remember, without a license file your project is proprietary even if it is on GitHub!
+Remember, without a license file your project is proprietary even if it is online!
 
 
 ## Install
