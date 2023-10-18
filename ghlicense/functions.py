@@ -65,28 +65,7 @@ def update_license(url, name, badge):
             readme_file.write("".join(text))
             readme_file.close()
             print(f"Added badge license for {name} in {readme_name}.")
-
-            # If within a git repository, commit the above changes to current branch
-            # Verify which is the current branch
-            try:
-                # os.popen() runs the command and capture its output as a file-like object \
-                # while read() will read the output of the command
-                current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
-                # let's encode it and decode the UTF-8 bytes to a stringa \
-                # and strip whitespaces to get the branch name
-                current_branch = current_branch_bytes.decode("utf-8").strip()
-                print(f"Current Git branch is: {current_branch}")
-            except Exception as e:
-                print(f"Error: {e}")
-            if os.path.isdir(".git") and os.path.exists("LICENSE"):
-                os.system("git add LICENSE")
-                os.system(f"git add {readme_name}")
-                os.system(f"git commit -m 'Added {name} LICENSE'")
-                # If a remote repository exists, attempt to push changes to it
-                if ARGS.origin is not None:
-                    os.system(f"git push {ARGS.origin} {current_branch}")
-                else:
-                    os.system(f"git push origin {current_branch}")
+            return readme_name
 
 
 def save_last_used_licenses(last_used_licenses):
@@ -177,7 +156,7 @@ def print_license_list(licenses_path):
         sys.stderr.write("licenses.json file not found.\n")
 
 
-def update_license_from_json(chosen_license):
+def update_license_from_json(chosen_license, licenses_path):
     print("Updating license from JSON...")
     # Read licenses from JSON file
     with open(licenses_path, "r") as file:
@@ -190,14 +169,39 @@ def update_license_from_json(chosen_license):
             break
     if license_info:
         print(f"License found: {license_info['name']}")
-        update_license(license_info["link"], chosen_license, license_info["badge"])
         print("License update successful.")
+        return update_license(license_info["link"], chosen_license, license_info["badge"])
     else:
         if isinstance(chosen_license, bool):
             print("No license provided")
         else:
             print(f"License {chosen_license} not found!")
         sys.exit(1)
+
+
+def git_commit(ARGS, name, readme_name):
+    if os.path.isdir(".git") and os.path.exists("LICENSE"):
+        os.system("git add LICENSE")
+        os.system(f"git add {readme_name}")
+        os.system(f"git commit -m 'Added {name} LICENSE'")
+    # If within a git repository, commit the above changes to current branch
+    # Verify which is the current branch
+    try:
+        # os.popen() runs the command and capture its output as a file-like object \
+        # while read() will read the output of the command
+        current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
+        # let's encode it and decode the UTF-8 bytes to a stringa \
+        # and strip whitespaces to get the branch name
+        current_branch = current_branch_bytes.decode("utf-8").strip()
+        print(f"Current Git branch is: {current_branch}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    # If a remote repository exists, attempt to push changes to it
+    if ARGS.origin is not None:
+        os.system(f"git push {ARGS.origin} {current_branch}")
+    else:
+        os.system(f"git push origin {current_branch}")
 
 
 def args_scan(ARGS):
@@ -283,7 +287,7 @@ def args_scan(ARGS):
     report_file.close()
 
 
-def args_license(ARGS):
+def args_license(ARGS, licenses_path):
     last_used_licenses = load_last_used_licenses()
 
     # This will be the actual license if explicitly called with a license
@@ -293,8 +297,8 @@ def args_license(ARGS):
     if not ARGS.license:
         chosen_license = pick_license_from_last_used(last_used_licenses)
 
-    # Call the update_license_from_json function
-    update_license_from_json(chosen_license)
+    readme_name = update_license_from_json(chosen_license, licenses_path)
+    git_commit(ARGS, chosen_license, readme_name)
 
     # Save the three most recently used licenses (remove duplicates, keep order)
     last_used_licenses.insert(0, chosen_license)

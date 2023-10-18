@@ -2,19 +2,11 @@
 
 import os
 import sys
-import time
-import urllib.request
 from argparse import REMAINDER, ArgumentParser, RawTextHelpFormatter
 
 from ghlicense import repobase
 from ghlicense.functions import (
-    save_last_used_licenses,
-    update_license_from_json,
-    pick_license_from_last_used,
-    load_last_used_licenses,
     print_license_list,
-    update_progress_bar,
-    print_license_status,
     args_scan,
     args_license,
 )
@@ -70,18 +62,12 @@ licenses_path = os.path.join(current_directory, "licenses.json")
 def main():
     """Execute the script."""
 
-    # If the script was launched in "scan" mode
     if ARGS.scan:
         args_scan(ARGS)
-
-    # If the script was launched in "licenselist" mode
     elif ARGS.licenselist:
         print_license_list(licenses_path)
-
-    # If the script was launched in "license" mode
     elif ARGS.license:
-        args_license(ARGS)
-
+        args_license(ARGS, licenses_path)
     else:
         print("Do you have checked the help section about how to use the various parameters?")
 
