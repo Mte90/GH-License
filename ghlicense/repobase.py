@@ -1,3 +1,4 @@
+"""Load providers"""
 import sys
 from abc import ABCMeta, abstractmethod
 
@@ -62,11 +63,11 @@ def get_provider(name):
     """
     if name in PROVIDERS:
         if not PROVIDERS[name]:
-            print("ERROR: Provider '%s' is disabled due to problems." % name)
+            print(f"ERROR: Provider '{name}' is disabled due to problems.")
             sys.exit(1)
         return PROVIDERS[name]
 
-    print("ERROR: Provider '%s' does not exist!" % name)
+    print(f"ERROR: Provider '{name}' does not exist!")
     sys.exit(1)
 
 

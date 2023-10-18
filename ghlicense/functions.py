@@ -1,3 +1,4 @@
+"""Functions used by the tool"""
 import sys
 import os
 import time
@@ -66,6 +67,8 @@ def update_license(url, name, badge):
             readme_file.close()
             print(f"Added badge license for {name} in {readme_name}.")
             return readme_name
+
+    return ""
 
 
 def save_last_used_licenses(last_used_licenses):
@@ -148,9 +151,9 @@ def print_license_list(licenses_path):
     try:
         with open(licenses_path, "r", encoding="UTF-8") as file:
             licenses_data = json.load(file)
-        for license in licenses_data:
-            name = license["name"]
-            description = license["description"]
+        for _license in licenses_data:
+            name = _license["name"]
+            description = _license["description"]
             print(f"{name}")
             print(f"    {description}")
     except FileNotFoundError:
@@ -165,9 +168,9 @@ def update_license_from_json(chosen_license, licenses_path):
         licenses = json.load(file)
     # Check if chosen_license exists in licenses
     license_info = None
-    for license in licenses:
-        if license["name"] == chosen_license:
-            license_info = license
+    for _license in licenses:
+        if _license["name"] == chosen_license:
+            license_info = _license
             break
 
     if license_info:
@@ -227,69 +230,69 @@ def args_scan(ARGS):
         report_file_name = ARGS.report
 
     # Start scanning user's public repos
-    report_file = open(report_file_name, "w", encoding="UTF-8")
-    report_file.write("Last scan done on: " + time.strftime("%c") + "\n")
-    report_file.write("Scan report of user: " + ARGS.scan + "\n\n")
-    count_total = len(list(user.get_repos()))
-    count_current = 0
-    count_license = 0
-    count_no_license = 0
-    count_forked = 0
+    with open(report_file_name, "w", encoding="UTF-8") as report_file:
+        report_file.write("Last scan done on: " + time.strftime("%c") + "\n")
+        report_file.write("Scan report of user: " + ARGS.scan + "\n\n")
+        count_total = len(list(user.get_repos()))
+        count_current = 0
+        count_license = 0
+        count_no_license = 0
+        count_forked = 0
 
-    license_base_name = "license"
-    # This is ordered by the most common extensions
-    license_extensions = ["", ".md", ".txt"]
-    license_files = []
+        license_base_name = "license"
+        # This is ordered by the most common extensions
+        license_extensions = ["", ".md", ".txt"]
+        license_files = []
 
-    # This is ordered like this because most license file names are in full caps
-    for license_name in [license_base_name.upper(), license_base_name]:
-        license_files.extend([license_name + extension for extension in license_extensions])
+        # This is ordered like this because most license file names are in full caps
+        for license_name in [license_base_name.upper(), license_base_name]:
+            license_files.extend([license_name + extension for extension in license_extensions])
 
-    # For each repo found
-    for repo in user.get_repos():
-        print(repo.full_name)
-        license_url = repo.raw_base_url
-        repo_url = repo.repo_url
-        update_progress_bar(count_current, count_total)
+        # For each repo found
+        for repo in user.get_repos():
+            print(repo.full_name)
+            license_url = repo.raw_base_url
+            repo_url = repo.repo_url
+            update_progress_bar(count_current, count_total)
 
-        # Look for a License file in the root directory fo the repo
-        for license_file in license_files:
-            missing = True
-            try:
-                urllib.request.urlretrieve(license_url + license_file)
-            except urllib.error.HTTPError as err:
-                if err.code == 404:
-                    missing = True
-            else:
-                license_status = f"✓ Found: {license_url}{license_file}"
+            # Look for a License file in the root directory fo the repo
+            for license_file in license_files:
+                missing = True
+                try:
+                    urllib.request.urlretrieve(license_url + license_file)
+                except urllib.error.HTTPError as err:
+                    if err.code == 404:
+                        missing = True
+                else:
+                    license_status = f"✓ Found: {license_url}{license_file}"
+                    print_license_status(license_status)
+                    report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
+                    report_file.write(f"{license_status} \n")
+                    missing = False
+                    count_license += 1
+                    break
+
+            if missing:
+                license_status = "✗ Missing the license, this repo is proprietary!"
                 print_license_status(license_status)
                 report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
                 report_file.write(f"{license_status} \n")
-                missing = False
-                count_license += 1
-                break
+                count_no_license += 1
+                if repo.fork:
+                    print(" ! Is a fork, check the original or create a PR!")
+                    report_file.write(" ! Is a fork, check the original or create a PR!\n")
+                    count_forked += 1
+            count_current += 1
+            report_file.write("\n")
 
-        if missing:
-            license_status = "✗ Missing the license, this repo is proprietary!"
-            print_license_status(license_status)
-            report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
-            report_file.write(f"{license_status} \n")
-            count_no_license += 1
-            if repo.fork:
-                print(" ! Is a fork, check the original or create a PR!")
-                report_file.write(" ! Is a fork, check the original or create a PR!\n")
-                count_forked += 1
-        count_current += 1
-        report_file.write("\n")
-
-    # Update progress based on % of repos scanned
-    print("|" + "#" * 40 + "| Done 100%")
-    report_file.write("Statistics: \n")
-    report_file.write(f"Repos with License: {count_license}\n")
-    report_file.write(f"Repos without License: {count_no_license}\n")
-    report_file.write(f"Repos without License and forked: {count_forked}\n")
-    report_file.write(f"Total Repos: {count_no_license + count_license}\n")
-    report_file.close()
+        # Update progress based on % of repos scanned
+        print("|" + "#" * 40 + "| Done 100%")
+        report_file.write("Statistics: \n")
+        report_file.write(f"Repos with License: {count_license}\n")
+        report_file.write(f"Repos without License: {count_no_license}\n")
+        report_file.write(f"Repos without License and forked: {count_forked}\n")
+        report_file.write(f"Total Repos: {count_no_license + count_license}\n")
+        report_file.close()
 
 
 def args_license(ARGS, licenses_path):

@@ -1,3 +1,4 @@
+"""Gitlab provider"""
 from ghlicense import repobase
 
 # By default, assume that this Github provider can be registered.

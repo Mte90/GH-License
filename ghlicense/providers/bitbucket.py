@@ -1,3 +1,4 @@
+"""Bitbucket provider"""
 import sys
 
 from ghlicense import repobase
