@@ -65,9 +65,9 @@ def get_provider(name):
             print("ERROR: Provider '%s' is disabled due to problems." % name)
             sys.exit(1)
         return PROVIDERS[name]
-    else:
-        print("ERROR: Provider '%s' does not exist!" % name)
-        sys.exit(1)
+
+    print("ERROR: Provider '%s' does not exist!" % name)
+    sys.exit(1)
 
 
 def get_providers():
@@ -80,9 +80,9 @@ def get_providers():
     """
     good = []
     bad = []
-    for name in PROVIDERS:
-        if PROVIDERS[name]:
-            good.append(name)
+    for provider in PROVIDERS.items():
+        if provider:
+            good.append(provider[0])
         else:
-            bad.append(name)
+            bad.append(provider[0])
     return good, bad

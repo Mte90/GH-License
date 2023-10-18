@@ -51,7 +51,7 @@ def update_license(url, name, badge):
     for readme_name in readme_names:
         if os.path.isfile(readme_name):
             # Open the file for reading/writing
-            readme_file = open(readme_name, "r+")
+            readme_file = open(readme_name, "r+", encoding="UTF-8")
 
             # Load entire file as a list of lines
             text = [i for i in readme_file.readlines()]
@@ -87,7 +87,7 @@ def save_last_used_licenses(last_used_licenses):
     if "lastUsed" not in config:
         config["lastUsed"] = {}
     config["lastUsed"]["lastUsedLicenses"] = ",".join(last_used_licenses)
-    with open(config_file_path, "w") as config_file:
+    with open(config_file_path, "w", encoding="UTF-8") as config_file:
         config.write(config_file)
 
 
@@ -106,7 +106,7 @@ def load_last_used_licenses():
         return []
 
 
-def pick_license_from_last_used(last_used_licenses):
+def pick_license_from_last_used(last_used_licenses, licenses_path):
     """
     Assumes the user did not select a license. Presents them with
     their most recently used licenses from last_used_licenses and allows
@@ -132,7 +132,7 @@ def pick_license_from_last_used(last_used_licenses):
 
     # Print the list and then exit
     if license_input.lower() == "n":
-        print_license_list()
+        print_license_list(licenses_path)
         sys.exit(1)
 
     # Return the name of the selected license if possible, or just return the input license
@@ -144,8 +144,9 @@ def pick_license_from_last_used(last_used_licenses):
 
 
 def print_license_list(licenses_path):
+    """Print the license list from the JSON file provided with the package"""
     try:
-        with open(licenses_path, "r") as file:
+        with open(licenses_path, "r", encoding="UTF-8") as file:
             licenses_data = json.load(file)
         for license in licenses_data:
             name = license["name"]
@@ -157,9 +158,10 @@ def print_license_list(licenses_path):
 
 
 def update_license_from_json(chosen_license, licenses_path):
+    """Check if the license provided exists in the package otherwise proceed"""
     print("Updating license from JSON...")
     # Read licenses from JSON file
-    with open(licenses_path, "r") as file:
+    with open(licenses_path, "r", encoding="UTF-8") as file:
         licenses = json.load(file)
     # Check if chosen_license exists in licenses
     license_info = None
@@ -167,19 +169,21 @@ def update_license_from_json(chosen_license, licenses_path):
         if license["name"] == chosen_license:
             license_info = license
             break
+
     if license_info:
         print(f"License found: {license_info['name']}")
         print("License update successful.")
         return update_license(license_info["link"], chosen_license, license_info["badge"])
+
+    if isinstance(chosen_license, bool):
+        print("No license provided")
     else:
-        if isinstance(chosen_license, bool):
-            print("No license provided")
-        else:
-            print(f"License {chosen_license} not found!")
-        sys.exit(1)
+        print(f"License {chosen_license} not found!")
+    sys.exit(1)
 
 
 def git_commit(ARGS, name, readme_name):
+    """Git commit the readme file changed"""
     if os.path.isdir(".git") and os.path.exists("LICENSE"):
         os.system("git add LICENSE")
         os.system(f"git add {readme_name}")
@@ -205,6 +209,7 @@ def git_commit(ARGS, name, readme_name):
 
 
 def args_scan(ARGS):
+    """The scan command"""
     # Initialise specified repo provider
     # (or use the default provider, if one is not specified)
     repo_provider = repobase.get_provider(ARGS.provider)
@@ -222,7 +227,7 @@ def args_scan(ARGS):
         report_file_name = ARGS.report
 
     # Start scanning user's public repos
-    report_file = open(report_file_name, "w")
+    report_file = open(report_file_name, "w", encoding="UTF-8")
     report_file.write("Last scan done on: " + time.strftime("%c") + "\n")
     report_file.write("Scan report of user: " + ARGS.scan + "\n\n")
     count_total = len(list(user.get_repos()))
@@ -288,6 +293,7 @@ def args_scan(ARGS):
 
 
 def args_license(ARGS, licenses_path):
+    """The license command"""
     last_used_licenses = load_last_used_licenses()
 
     # This will be the actual license if explicitly called with a license
@@ -295,7 +301,7 @@ def args_license(ARGS, licenses_path):
 
     # Called without a license. List off the last used licenses and let user select.
     if not ARGS.license:
-        chosen_license = pick_license_from_last_used(last_used_licenses)
+        chosen_license = pick_license_from_last_used(last_used_licenses, licenses_path)
 
     readme_name = update_license_from_json(chosen_license, licenses_path)
     git_commit(ARGS, chosen_license, readme_name)

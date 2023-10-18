@@ -42,7 +42,7 @@ For example:
 https://gist.github.com/revolter/99ea1acd48ad7c2d898bca2bc58f37bc
 """
 
-from sys import argv
+from sys import argv, exit
 from subprocess import Popen, PIPE
 from os import access, listdir, X_OK
 from os.path import isfile, isdir, abspath, normpath, dirname, join, basename, splitext
