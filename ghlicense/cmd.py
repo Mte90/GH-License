@@ -31,16 +31,16 @@ PARSER = ArgumentParser(
     formatter_class=RawTextHelpFormatter,
 )
 
-disabled_providers = ", ".join(DISABLED_PROVIDERS) if DISABLED_PROVIDERS else ""
-enabled_providers = ", ".join(ENABLED_PROVIDERS)
-ERR_PROVIDERS_TXT = f"(errored providers: {disabled_providers})"
+DISABLED_PROVIDERS = ", ".join(DISABLED_PROVIDERS) if DISABLED_PROVIDERS else ""
+ENABLED_PROVIDERS = ", ".join(ENABLED_PROVIDERS)
+ERR_PROVIDERS_TXT = f"(errored providers: {DISABLED_PROVIDERS})"
 
 PARSER.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
 PARSER.add_argument("--license", help="Download a license file, arguments: [License_name]", nargs="?", const=True)
 PARSER.add_argument("--licenselist", "--license-list", help="Show licenses available", action="store_true")
 PARSER.add_argument(
     "--provider",
-    help=f"Repository provider. Defaults to github. Available providers: {enabled_providers} {ERR_PROVIDERS_TXT}",
+    help=f"Repository provider. Defaults to github. Available providers: {ENABLED_PROVIDERS} {ERR_PROVIDERS_TXT}",
     action="store",
     default="github",
 )

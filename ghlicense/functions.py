@@ -254,6 +254,7 @@ def args_scan(ARGS):
             license_url = repo.raw_base_url
             repo_url = repo.repo_url
             update_progress_bar(count_current, count_total)
+            to_print = ""
 
             # Look for a License file in the root directory fo the repo
             for license_file in license_files:
@@ -266,8 +267,8 @@ def args_scan(ARGS):
                 else:
                     license_status = f"✓ Found: {license_url}{license_file}"
                     print_license_status(license_status)
-                    report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
-                    report_file.write(f"{license_status} \n")
+                    to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
+                    to_print += f"{license_status} \n"
                     missing = False
                     count_license += 1
                     break
@@ -275,18 +276,19 @@ def args_scan(ARGS):
             if missing:
                 license_status = "✗ Missing the license, this repo is proprietary!"
                 print_license_status(license_status)
-                report_file.write(f"Repo: {repo.full_name}\nURL: {repo_url} \n")
-                report_file.write(f"{license_status} \n")
+                to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
+                to_print += f"{license_status} \n"
                 count_no_license += 1
                 if repo.fork:
                     print(" ! Is a fork, check the original or create a PR!")
-                    report_file.write(" ! Is a fork, check the original or create a PR!\n")
+                    to_print += " ! Is a fork, check the original or create a PR!\n"
                     count_forked += 1
             count_current += 1
-            report_file.write("\n")
+            to_print += "\n"
 
         # Update progress based on % of repos scanned
         print("|" + "#" * 40 + "| Done 100%")
+        report_file.write(to_print)
         report_file.write("Statistics: \n")
         report_file.write(f"Repos with License: {count_license}\n")
         report_file.write(f"Repos without License: {count_no_license}\n")
