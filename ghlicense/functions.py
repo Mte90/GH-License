@@ -5,8 +5,12 @@ import time
 import json
 import urllib.request
 from configparser import ConfigParser
+from multiprocessing.pool import ThreadPool
+from functools import partial
 from ghlicense import repobase
 from ghlicense.providers import github, bitbucket, gitlab
+
+import subprocess
 
 
 def print_license_status(msg):
@@ -184,31 +188,82 @@ def update_license_from_json(chosen_license, licenses_path):
         print(f"License {chosen_license} not found!")
     sys.exit(1)
 
-
 def git_commit(ARGS, name, readme_name):
-    """Git commit the readme file changed"""
-    if os.path.isdir(".git") and os.path.exists("LICENSE"):
-        os.system("git add LICENSE")
-        os.system(f"git add {readme_name}")
-        os.system(f"git commit -m 'Added {name} LICENSE'")
-    # If within a git repository, commit the above changes to current branch
-    # Verify which is the current branch
-    try:
-        # os.popen() runs the command and capture its output as a file-like object \
-        # while read() will read the output of the command
-        current_branch_bytes = os.popen("git rev-parse --abbrev-ref HEAD").read().encode("utf-8")
-        # let's encode it and decode the UTF-8 bytes to a stringa \
-        # and strip whitespaces to get the branch name
-        current_branch = current_branch_bytes.decode("utf-8").strip()
-        print(f"Current Git branch is: {current_branch}")
-    except Exception as e:
-        print(f"Error: {e}")
 
-    # If a remote repository exists, attempt to push changes to it
-    if ARGS.origin is not None:
-        os.system(f"git push {ARGS.origin} {current_branch}")
-    else:
-        os.system(f"git push origin {current_branch}")
+    def is_git_repo():
+        """Check if current directory is a git repository."""
+        result = subprocess.run(["git", "rev-parse", "--git-dir"],
+                              capture_output=True,
+                              text=True)
+        return result.returncode == 0
+
+    if not is_git_repo():
+        print("Not a git repository. Skipping git operations.")
+        return
+
+    if not os.path.exists("LICENSE"):
+        print("LICENSE file not found. Skipping git operations.")
+        return
+
+    # All git commands wrapped in is_git_repo() check
+    try:
+        subprocess.run(["git", "add", "LICENSE"], check=True)
+        subprocess.run(["git", "add", readme_name], check=True)
+        subprocess.run(["git", "commit", "-m", f"Added {name} LICENSE"], check=True)
+
+        # Get current branch safely
+        result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                              capture_output=True, text=True, check=True)
+        current_branch = result.stdout.strip()
+        print(f"Current Git branch is: {current_branch}")
+
+        # Push changes
+        if ARGS.origin is not None:
+            subprocess.run(["git", "push", ARGS.origin, current_branch], check=True)
+        else:
+            subprocess.run(["git", "push", "origin", current_branch], check=True)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Git command failed: {e}")
+        print(f"Error output: {e.stderr.strip() if e.stderr else ''}")
+
+def loop_repo_scan(repo, license_files):
+    license_url = repo.raw_base_url
+    repo_url = repo.repo_url
+    to_print = ""
+    count_license = 0
+    count_no_license = 0
+    count_forked = 0
+
+    # Look for a License file in the root directory fo the repo
+    for license_file in license_files:
+        missing = True
+        try:
+            urllib.request.urlretrieve(license_url + license_file)
+        except urllib.error.HTTPError as err:
+            if err.code == 404:
+                missing = True
+        else:
+            license_status = f"✓ Found: {license_url}{license_file}"
+            print_license_status(license_status)
+            to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
+            to_print += f"{license_status} \n"
+            missing = False
+            count_license += 1
+            break
+
+    if missing:
+        license_status = "✗ Missing the license, this repo is proprietary!"
+        print_license_status(license_status)
+        to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
+        to_print += f"{license_status} \n"
+        count_no_license += 1
+        if repo.fork:
+            to_print += " ! Is a fork, check the original or create a PR!\n"
+            count_forked += 1
+
+    to_print += "\n"
+    return to_print, count_license, count_no_license, count_forked
 
 
 def args_scan(ARGS):
@@ -248,43 +303,21 @@ def args_scan(ARGS):
         for license_name in [license_base_name.upper(), license_base_name]:
             license_files.extend([license_name + extension for extension in license_extensions])
 
+        to_print = ''
         # For each repo found
+        print('Downloading Repository list')
         for repo in user.get_repos():
-            print(repo.full_name)
-            license_url = repo.raw_base_url
-            repo_url = repo.repo_url
+            with ThreadPool(processes=4) as pool:
+                print(repo.full_name)
+                count_current += 1
+                _to_print, _count_license, _count_no_license, _count_forked = '',0,0,0
+                pool.starmap(partial(loop_repo_scan, repo, license_files),[])
+                to_print += _to_print
+                count_license += _count_license
+                count_no_license += _count_no_license
+                count_forked += _count_forked
+
             update_progress_bar(count_current, count_total)
-            to_print = ""
-
-            # Look for a License file in the root directory fo the repo
-            for license_file in license_files:
-                missing = True
-                try:
-                    urllib.request.urlretrieve(license_url + license_file)
-                except urllib.error.HTTPError as err:
-                    if err.code == 404:
-                        missing = True
-                else:
-                    license_status = f"✓ Found: {license_url}{license_file}"
-                    print_license_status(license_status)
-                    to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
-                    to_print += f"{license_status} \n"
-                    missing = False
-                    count_license += 1
-                    break
-
-            if missing:
-                license_status = "✗ Missing the license, this repo is proprietary!"
-                print_license_status(license_status)
-                to_print += f"Repo: {repo.full_name}\nURL: {repo_url} \n"
-                to_print += f"{license_status} \n"
-                count_no_license += 1
-                if repo.fork:
-                    print(" ! Is a fork, check the original or create a PR!")
-                    to_print += " ! Is a fork, check the original or create a PR!\n"
-                    count_forked += 1
-            count_current += 1
-            to_print += "\n"
 
         # Update progress based on % of repos scanned
         print("|" + "#" * 40 + "| Done 100%")
