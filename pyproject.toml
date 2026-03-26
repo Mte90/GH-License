@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gh-license"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
     {name = "Mte90", email = "mte90net@gmail.com"}
 ]
@@ -31,7 +31,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/Mte90/GH-License"
-Download = "https://github.com/Mte90/GH-License/tarball/0.3.0"
+Download = "https://github.com/Mte90/GH-License/tarball/0.4.0"
 
 [project.scripts]
 gh-license = "ghlicense.cmd:main"
