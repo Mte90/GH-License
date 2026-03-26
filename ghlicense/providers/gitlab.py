@@ -1,4 +1,6 @@
 """Gitlab provider"""
+
+
 from ghlicense import repobase
 
 # By default, assume that this Github provider can be registered.
@@ -10,6 +12,7 @@ try:
 except ImportError:
     # If the module failed to import, then this gitlab provider can NOT be registered.
     PROVIDER_PLUGIN_LOADED = False
+
 
 class GitLabProvider(repobase.Provider):
     """Derived a GitLabProvider from repobase.Provider."""
@@ -36,8 +39,8 @@ class GitLabProvider(repobase.Provider):
         # Iterate over the list of "gitlab repos" and
         # prepare a list of "repos" with properties of interest initialised.
         for g_repo in g_repos:
-            raw_base_url = 'http://gitlab.com/' + g_repo.path_with_namespace + '/blob/' + g_repo.default_branch + '/'
-            repo_url = 'http://gitlab.com/' + g_repo.path_with_namespace
+            raw_base_url = 'https://gitlab.com/' + g_repo.path_with_namespace + '/blob/' + g_repo.default_branch + '/'
+            repo_url = 'https://gitlab.com/' + g_repo.path_with_namespace
             repos.append(repobase.Repo(g_repo.path_with_namespace, raw_base_url, repo_url,
                                        g_repo.default_branch, False))
         return repos

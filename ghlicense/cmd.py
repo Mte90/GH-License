@@ -1,76 +1,47 @@
-#!/usr/bin/env python3
-
+"""Backward compatibility wrapper for CLI.
+This module re-exports the CLI functionality for backward compatibility.
+The actual implementation has been moved to ghlicense.cli module.
+"""
+import logging
 import os
 import sys
-from argparse import REMAINDER, ArgumentParser, RawTextHelpFormatter
+import asyncio
 
-from ghlicense import repobase
-from ghlicense.functions import (
-    print_license_list,
-    args_scan,
-    args_license,
-)
-from ghlicense.providers import github, bitbucket, gitlab
+from ghlicense.cli.parser import PARSER, parse_args
 
-ENHANCED_DESCRIPTION = """
-    This script scans every repo of the specified user for a license
-    file. If a license can't be found, the script will upload a
-    a specified license to your repo.\n
-    Choose a license on http://choosealicense.com/licenses/ or use
-    http://www.addalicense.com/.\n
-    Remember, without a license file, your project is proprietary!
-"""
+# Re-export for backward compatibility
+ARGS = parse_args()
 
-# Load all the providers
-ENABLED_PROVIDERS, DISABLED_PROVIDERS = repobase.get_providers()
-
-# Parse the cmdline and initialise args
-PARSER = ArgumentParser(
-    description="GitHosting License checker and downloader",
-    epilog=ENHANCED_DESCRIPTION,
-    formatter_class=RawTextHelpFormatter,
-)
-
-DISABLED_PROVIDERS = ", ".join(DISABLED_PROVIDERS) if DISABLED_PROVIDERS else ""
-ENABLED_PROVIDERS = ", ".join(ENABLED_PROVIDERS)
-ERR_PROVIDERS_TXT = f"(errored providers: {DISABLED_PROVIDERS})"
-
-PARSER.add_argument("--scan", help="Scan repo of the user, arguments: [User_nick]", action="store")
-PARSER.add_argument("--license", help="Download a license file, arguments: [License_name]", nargs="?", const=True)
-PARSER.add_argument("--licenselist", "--license-list", help="Show licenses available", action="store_true")
-PARSER.add_argument(
-    "--provider",
-    help=f"Repository provider. Defaults to github. Available providers: {ENABLED_PROVIDERS} {ERR_PROVIDERS_TXT}",
-    action="store",
-    default="github",
-)
-PARSER.add_argument("--report", help="The report filename for scan (optional)", action="store")
-PARSER.add_argument("--origin", help="The origin of the git repo (optional)", action="store")
-PARSER.add_argument("args", nargs=REMAINDER)
-
-ARGS = PARSER.parse_args()
-
-# Check whether at least 1 cmdline param was passed to the script.
-# If not then display help/usage and quit.
-if len(sys.argv) < 2:
-    PARSER.print_help()
-    sys.exit(0)
-
+# Get licenses path for backward compatibility
 current_directory = os.path.dirname(os.path.abspath(__file__))
 licenses_path = os.path.join(current_directory, "licenses.json")
 
+from ghlicense.scanner import args_scan
+from ghlicense.functions import print_license_list, args_license
 
-def main():
-    """Execute the script."""
+
+def main() -> None:
+    """Execute the script - backward compatibility wrapper."""
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s: %(message)s"
+    )
+
+    # Check whether at least 1 cmdline param was passed to the script.
+    # If not then display help/usage and quit.
+    if len(sys.argv) < 2:
+        PARSER.print_help()
+        sys.exit(0)
 
     if ARGS.scan:
-        args_scan(ARGS)
+        asyncio.run(args_scan(ARGS))
     elif ARGS.licenselist:
         print_license_list(licenses_path)
     elif ARGS.license:
         args_license(ARGS, licenses_path)
     else:
-        print("Do you have checked the help section about how to use the various parameters?")
+        logging.info("Do you have checked the help section about how to use the various parameters?")
 
     sys.exit(1)
 

@@ -1,5 +1,6 @@
 """Bitbucket provider"""
 import sys
+import logging
 
 from ghlicense import repobase
 
@@ -36,7 +37,7 @@ class BitBucketProvider(repobase.Provider):
 
         # If result is empty then quit
         if not bb_repos_resp[0]:
-            print("ERROR: BitBucket username not found!")
+            logging.error("ERROR: BitBucket username not found!")
             sys.exit(1)
         # else we now have a list of BitBucket repos of the user.
         bb_repos = bb_repos_resp[1]
@@ -47,9 +48,9 @@ class BitBucketProvider(repobase.Provider):
         for bb_repo in bb_repos:
             full_name = self.username + "/" + bb_repo['slug']
             default_branch = "master"
-            raw_base_url = 'http://bitbucket.com/' + \
+            raw_base_url = 'https://bitbucket.com/' + \
                 full_name + '/raw/' + default_branch + '/'
-            repo_url = 'http://bitbucket.com/' + full_name
+            repo_url = 'https://bitbucket.com/' + full_name
             repos.append(repobase.Repo(full_name, raw_base_url, repo_url,
                                        default_branch, bb_repo['is_fork']))
         return repos

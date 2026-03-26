@@ -1,16 +1,25 @@
 """Load providers"""
 import sys
+import logging
 from abc import ABCMeta, abstractmethod
 
+from typing import Dict, List, Tuple, Type
 # List of current successfully registered i.e. "active" providers.
 # These are sources of repos i.e. public repository hosts.
-PROVIDERS = {}
+PROVIDERS: Dict[str, Type["Provider"] | None] = {}
 
 
 class Repo:
     """Contains details of a repository."""
 
-    def __init__(self, full_name, raw_base_url, repo_url, default_branch="master", fork=False):
+    def __init__(
+        self,
+        full_name: str,
+        raw_base_url: str,
+        repo_url: str,
+        default_branch: str = "master",
+        fork: bool = False,
+    ) -> None:
         """Repo class constructor
 
         Keyword arguments:
@@ -20,24 +29,27 @@ class Repo:
         default_branch -- The branch to check (default "master").
         fork --  Whether the repo is a fork of another repo (default False).
         """
-        self.full_name = full_name
-        self.raw_base_url = raw_base_url
-        self.repo_url = repo_url
-        self.default_branch = default_branch
-        self.fork = fork
+        self.full_name: str = full_name
+        self.raw_base_url: str = raw_base_url
+        self.repo_url: str = repo_url
+        self.default_branch: str = default_branch
+        self.fork: bool = fork
 
 
 class Provider(metaclass=ABCMeta):
     @abstractmethod
-    def __init__(self, username):
+    def __init__(self, username: str) -> None:
         pass
 
     @abstractmethod
-    def get_repos(self):
+    def get_repos(self) -> List[Repo]:
         pass
 
-
-def register_provider(name, provider_class, loaded=False):
+def register_provider(
+    name: str,
+    provider_class: Type["Provider"] | None,
+    loaded: bool = False,
+) -> None:
     """Register i.e. Activate a provider.
 
     Each provider needs to call this function with loaded = True to register
@@ -55,7 +67,7 @@ def register_provider(name, provider_class, loaded=False):
             PROVIDERS[name] = None
 
 
-def get_provider(name):
+def get_provider(name: str) -> Type["Provider"]:
     """Returns whether a repo provider is registered.
 
     Keyword arguments:
@@ -63,15 +75,15 @@ def get_provider(name):
     """
     if name in PROVIDERS:
         if not PROVIDERS[name]:
-            print(f"ERROR: Provider '{name}' is disabled due to problems.")
+            logging.error(f"Provider '{name}' is disabled due to problems.")
             sys.exit(1)
-        return PROVIDERS[name]
+        return PROVIDERS[name]  # type: ignore[return-value]
 
-    print(f"ERROR: Provider '{name}' does not exist!")
+    logging.error(f"Provider '{name}' does not exist!")
     sys.exit(1)
 
 
-def get_providers():
+def get_providers() -> Tuple[List[str], List[str]]:
     """Returns a pair of dicts of providers.
 
     Each registered provider is in one of the 2 dicts.
@@ -79,10 +91,10 @@ def get_providers():
     The "good" dict contains successfully loaded providers.
     The "bad" dict contains providers that failed to load/initialise.
     """
-    good = []
-    bad = []
+    good: List[str] = []
+    bad: List[str] = []
     for provider in PROVIDERS.items():
-        if provider:
+        if provider[1]:  # Check if provider class is not None
             good.append(provider[0])
         else:
             bad.append(provider[0])

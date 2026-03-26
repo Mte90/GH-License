@@ -1,4 +1,6 @@
 """Github provider"""
+import logging
+
 from ghlicense import repobase
 
 # By default, assume that this Github provider can be registered.
@@ -10,6 +12,7 @@ try:
 except ImportError:
     # If the module failed to import, then this github provider can NOT be registered.
     PROVIDER_PLUGIN_LOADED = False
+
 
 class GitHubProvider(repobase.Provider):
     """Derived a GithubProvider from repobase.Provider."""
@@ -36,11 +39,25 @@ class GitHubProvider(repobase.Provider):
         # Iterate over the list of "github repos" and
         # prepare a list of "repos" with properties of interest initialised.
         for g_repo in g_repos:
-            raw_base_url = 'http://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '/'
-            repo_url = 'http://github.com/' + g_repo.full_name
+            raw_base_url = 'https://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '/'
+            repo_url = 'https://github.com/' + g_repo.full_name
             repos.append(repobase.Repo(g_repo.full_name, raw_base_url, repo_url,
                                        g_repo.default_branch, g_repo.fork))
         return repos
+
+    def get_license_info(self, repo_name):
+        try:
+            repo = self.github.get_repo(repo_name)
+            license_info = repo.get_license()
+            if license_info:
+                return {
+                    "name": license_info.name,
+                    "spdx_id": license_info.spdx_id,
+                    "key": license_info.key,
+                }
+        except Exception as e:
+            logging.debug(f"Failed to get license info for {repo_name}: {e}")
+        return None
 
 
 # Register this Github repo provider with ghlicense
