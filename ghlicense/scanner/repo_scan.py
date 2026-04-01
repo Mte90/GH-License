@@ -104,15 +104,22 @@ async def args_scan(ARGS):
     # (or use the default license report file name, if one is not specified)
     report_file_name = "default"
     if ARGS.report is None:
-        report_file_name = f"{ARGS.scan}-{ARGS.provider}-license-report"
+        report_file_name = f"{ARGS.scan}-{ARGS.provider}-license-report.md"
         logger.info(f' No report file name found, using default "{report_file_name}"')
     else:
+        # Ensure .md extension
+        if not report_file_name.endswith('.md'):
+            report_file_name += '.md'
         report_file_name = ARGS.report
 
-    # Start scanning user's public repos
+    # Start scanning user's public repos (Markdown format)
     with open(report_file_name, "w", encoding="UTF-8") as report_file:
-        report_file.write("Last scan done on: " + time.strftime("%c") + "\n")
-        report_file.write("Scan report of user: " + ARGS.scan + "\n")
+        # Markdown header
+        report_file.write(f"# License Scan Report: {ARGS.scan}\n\n")
+        report_file.write(f"**Provider:** {ARGS.provider}\n")
+        report_file.write(f"**Scan Date:** {time.strftime('%c')}\n")
+        report_file.write(f"**Filter:** {ARGS.show if hasattr(ARGS, 'show') and ARGS.show else 'all'}\n\n")
+        report_file.write("---\n\n")
         
         # Track license status for filtering
         licensed_repos = []
@@ -171,7 +178,14 @@ async def args_scan(ARGS):
 
         # Filter repos based on --show option
         show_filter = ARGS.show if hasattr(ARGS, 'show') and ARGS.show else "all"
-        report_file.write(f"License status filter: {show_filter}\n\n")
+        
+        if show_filter == "all":
+            report_file.write("## All Repositories\n\n")
+        elif show_filter == "licensed":
+            report_file.write("## Licensed Repositories\n\n")
+        elif show_filter == "unlicensed":
+            report_file.write("## Unlicensed Repositories\n\n")
+        
         
         # Filter and aggregate output
         filtered_output = ""
@@ -185,9 +199,28 @@ async def args_scan(ARGS):
                 filtered_output += repo_content
         
         report_file.write(filtered_output)
-        report_file.write("\nStatistics: \n")
-        report_file.write(f"Repos with License: {count_license}\n")
-        report_file.write(f"Repos without License: {count_no_license}\n")
-        report_file.write(f"Repos without License and forked: {count_forked}\n")
-        report_file.write(f"Total Repos: {count_no_license + count_license}\n")
+        
+        unlicensed_urls = []
+        for repo_content in unlicensed_repos:
+            for line in repo_content.split('\n'):
+                if line.startswith("URL: "):
+                    url = line[5:].strip()
+                    unlicensed_urls.append(f"- [{url}]({url})")
+                    break
+        
+        # Statistics section in markdown table format
+        report_file.write("\n## Statistics\n\n")
+        report_file.write("| Metric | Count |\n")
+        report_file.write("|--------|-------|\n")
+        report_file.write(f"| Repos with License | {count_license} |\n")
+        report_file.write(f"| Repos without License | {count_no_license} |\n")
+        report_file.write(f"| Forked without License | {count_forked} |\n")
+        report_file.write(f"| Total Repos | {count_no_license + count_license} |\n")
+        
+        # Clickable URLs section
+        if unlicensed_urls:
+            report_file.write("\n## Unlicensed Repositories (Click to Visit)\n\n")
+            for url_line in unlicensed_urls:
+                report_file.write(f"{url_line}\n")
+        
         report_file.close()

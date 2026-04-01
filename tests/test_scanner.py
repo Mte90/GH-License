@@ -203,12 +203,13 @@ class TestArgsScanFunction:
         mock_repo.full_name = "testuser/testrepo"
         mock_repo.default_branch = "main"
         mock_repo.fork = False
+        mock_repo.repo_url = "https://github.com/testuser/testrepo"
         mock_user.get_repos.return_value = [mock_repo]
         mock_provider.return_value = mock_user
         
         with patch('ghlicense.scanner.repo_scan.repobase.get_provider', return_value=mock_provider):
             with patch('ghlicense.scanner.repo_scan.loop_repo_scan', new_callable=AsyncMock) as mock_loop:
-                mock_loop.return_value = ("Test output", 1, 0, 0)
+                mock_loop.return_value = ("URL: https://github.com/testuser/testrepo\n", 0, 1, 0)
                 
                 async def run():
                     return await repo_scan.args_scan(MockArgs())
