@@ -5,6 +5,12 @@ from unittest.mock import patch, AsyncMock
 from ghlicense.cli import parser
 from ghlicense import repobase
 
+try:
+    from ghlicense.providers import bitbucket
+    HAS_BITBUCKET = True
+except ImportError:
+    HAS_BITBUCKET = False
+
 
 class TestCLIParser:
     """Tests for CLI parser."""
@@ -81,6 +87,7 @@ class TestCLIFunctions:
         """Test GitLab provider is enabled."""
         assert repobase.PROVIDERS.get("gitlab") is not None
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_enabled(self):
         """Test Bitbucket provider is enabled (if library installed)."""
         assert "bitbucket" in repobase.PROVIDERS

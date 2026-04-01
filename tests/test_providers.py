@@ -3,7 +3,11 @@
 from unittest.mock import MagicMock
 from ghlicense.providers import github as github
 from ghlicense.providers import gitlab as gitlab
-from ghlicense.providers import bitbucket as bitbucket
+try:
+    from ghlicense.providers import bitbucket as bitbucket
+    HAS_BITBUCKET = True
+except ImportError:
+    HAS_BITBUCKET = False
 from ghlicense import repobase
 import pytest
 
@@ -19,6 +23,7 @@ class TestProviderRegistration:
         """Test that GitLab provider is registered."""
         assert "gitlab" in repobase.PROVIDERS
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_registered(self):
         """Test that Bitbucket provider is registered."""
         assert "bitbucket" in repobase.PROVIDERS
@@ -69,14 +74,17 @@ class TestGitLabProviderModule:
 class TestBitbucketProviderModule:
     """Tests for Bitbucket provider module structure."""
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_module_importable(self):
         """Test that bitbucket module is importable."""
         assert hasattr(bitbucket, 'BitBucketProvider')
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_inherits_from_provider(self):
         """Test BitBucketProvider inherits from Provider."""
         assert issubclass(bitbucket.BitBucketProvider, repobase.Provider)
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_has_get_repos_method(self):
         """Test BitBucketProvider has get_repos method."""
         assert hasattr(bitbucket.BitBucketProvider, 'get_repos')
@@ -93,6 +101,7 @@ class TestProviderPluginLoaded:
         """Test PROVIDER_PLUGIN_LOADED is a boolean."""
         assert isinstance(gitlab.PROVIDER_PLUGIN_LOADED, bool)
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_plugin_loaded_is_bool(self):
         """Test PROVIDER_PLUGIN_LOADED is a boolean."""
         assert isinstance(bitbucket.PROVIDER_PLUGIN_LOADED, bool)
@@ -143,6 +152,7 @@ class TestGitLabProviderFunctional:
 class TestBitbucketProviderFunctional:
     """Functional tests for Bitbucket provider with mocks."""
 
+    @pytest.mark.skipif(not HAS_BITBUCKET, reason="bitbucket module not available")
     def test_bitbucket_provider_instantiation(self):
         """Test BitBucketProvider can be instantiated."""
         # Test the provider class exists and can be accessed

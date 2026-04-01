@@ -1,0 +1,24 @@
+# License Scan Report: testuser
+
+**Provider:** github
+**Scan Date:** Wed Apr  1 12:33:09 2026
+**Filter:** all
+
+---
+
+## All Repositories
+
+URL: https://github.com/testuser/testrepo
+
+## Statistics
+
+| Metric | Count |
+|--------|-------|
+| Repos with License | 0 |
+| Repos without License | 1 |
+| Forked without License | 0 |
+| Total Repos | 1 |
+
+## Unlicensed Repositories (Click to Visit)
+
+- [https://github.com/testuser/testrepo](https://github.com/testuser/testrepo)

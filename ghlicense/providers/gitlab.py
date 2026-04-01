@@ -1,7 +1,8 @@
 """Gitlab provider"""
-
+import asyncio
 
 from ghlicense import repobase
+from ghlicense.utils.retry import async_retry, RateLimitError
 
 # By default, assume that this Github provider can be registered.
 PROVIDER_PLUGIN_LOADED = True
@@ -32,14 +33,28 @@ class GitLabProvider(repobase.Provider):
 
     def get_repos(self):
         """Wrapper around gitlab.get_repos() - only source repositories by default."""
-        # Obtain a list of gitlab repos of the user (owned=True to get user's projects)
-        g_repos = self.user.projects.list(owned=True, include_subgroups=False)
-        repos = []
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No running event loop - create a new one
+            loop = asyncio.new_event_loop()
+            try:
+                return loop.run_until_complete(self.get_repos_async())
+            finally:
+                loop.close()
+        else:
+            # There's a running loop - use it
+            return loop.run_until_complete(self.get_repos_async())
 
-        # Iterate over the list of "gitlab repos" and
-        # prepare a list of "repos" with properties of interest initialised.
-        for g_repo in g_repos:
-            # Skip forks (marked as forked_project in GitLab)
+    async def get_repos_async(self):
+        """Async wrapper around gitlab.get_repos() - only source repositories by default."""
+        @async_retry(max_retries=5, base_delay=1)
+        async def _fetch_repos():
+            return await asyncio.to_thread(self._fetch_repos_sync)
+
+        repos_data = await _fetch_repos()
+        repos = []
+        for g_repo in repos_data:
             if hasattr(g_repo, 'forked_project') and g_repo.forked_project:
                 continue
             raw_base_url = 'https://gitlab.com/' + g_repo.path_with_namespace + '/blob/' + g_repo.default_branch + '/'
@@ -47,6 +62,10 @@ class GitLabProvider(repobase.Provider):
             repos.append(repobase.Repo(g_repo.path_with_namespace, raw_base_url, repo_url,
                                        g_repo.default_branch, False))
         return repos
+
+    def _fetch_repos_sync(self):
+        """Synchronous fetch of repos."""
+        return self.user.projects.list(owned=True, include_subgroups=False)
 
 
 # Register this Github repo provider with ghlicense

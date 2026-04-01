@@ -1,7 +1,9 @@
 """Github provider"""
+import asyncio
 import logging
 
 from ghlicense import repobase
+from ghlicense.utils.retry import async_retry, RateLimitError
 
 # By default, assume that this Github provider can be registered.
 PROVIDER_PLUGIN_LOADED = True
@@ -32,18 +34,37 @@ class GitHubProvider(repobase.Provider):
 
     def get_repos(self):
         """Wrapper around github.get_repos() - only source repositories by default."""
-        # Obtain a list of github repos of the user (type=source excludes forks)
-        g_repos = self.user.get_repos(type="source")
-        repos = []
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No running event loop - create a new one
+            loop = asyncio.new_event_loop()
+            try:
+                return loop.run_until_complete(self.get_repos_async())
+            finally:
+                loop.close()
+        else:
+            # There's a running loop - use it
+            return loop.run_until_complete(self.get_repos_async())
 
-        # Iterate over the list of "github repos" and
-        # prepare a list of "repos" with properties of interest initialised.
-        for g_repo in g_repos:
+    async def get_repos_async(self):
+        """Async wrapper around github.get_repos() - only source repositories by default."""
+        @async_retry(max_retries=5, base_delay=1)
+        async def _fetch_repos():
+            return await asyncio.to_thread(self._fetch_repos_sync)
+
+        repos_data = await _fetch_repos()
+        repos = []
+        for g_repo in repos_data:
             raw_base_url = 'https://github.com/' + g_repo.full_name + '/blob/' + g_repo.default_branch + '/'
             repo_url = 'https://github.com/' + g_repo.full_name
             repos.append(repobase.Repo(g_repo.full_name, raw_base_url, repo_url,
                                        g_repo.default_branch, g_repo.fork))
         return repos
+
+    def _fetch_repos_sync(self):
+        """Synchronous fetch of repos."""
+        return list(self.user.get_repos(type="source"))
 
     def get_license_info(self, repo_name):
         try:

@@ -10,10 +10,10 @@ This plan addresses the remaining open GitHub issues that were not fully impleme
 - ✅ **#47** - Code Refactoring - IMPLEMENTED (modular structure)
 - ✅ **#49** - GitHub API License Detection - IMPLEMENTED (uses GitHub API)
 - ✅ **#50** - --show filter option - IMPLEMENTED
-- ⚠️ **#59** - Search Other Branches - PARTIALLY IMPLEMENTED (GitHub OK, Bitbucket still hardcoded)
+- ✅ **#59** - Search Other Branches - IMPLEMENTED (GitHub uses default_branch from API, Bitbucket removed in #41)
 - ✅ **#68** - Asyncio Migration - IMPLEMENTED
-- ❌ **#41** - Remove Bitbucket API Support - NOT IMPLEMENTED
-- ❌ **Rate Limiting** - NOT IMPLEMENTED (was in original plan scope)
+- ✅ **#41** - Remove Bitbucket API Support - IMPLEMENTED (commit e218e6b)
+- ✅ **Rate Limiting** - IMPLEMENTED (exponential backoff with 5 retries)
 
 ### Excluded from Original Plan:
 - #19 - ScanCode-Toolkit integration
@@ -21,27 +21,29 @@ This plan addresses the remaining open GitHub issues that were not fully impleme
 
 ## Implementation Tasks
 
-### Wave 1: Critical Fixes
-
-#### Task 1: Fix Bitbucket Default Branch Detection (Issue #59 - Partial)
-- **Description**: Bitbucket provider still hardcodes "master" instead of detecting the default branch dynamically
-- **File**: `ghlicense/providers/bitbucket.py`
-- **Expected Outcome**: Use Bitbucket API to get actual default branch name
-- **Verification**: Check that `bitbucket.py` no longer has hardcoded "master"
+### ✅ COMPLETED
 
 #### Task 2: Implement Rate Limiting with Exponential Backoff
-- **Description**: Add automatic retry with exponential backoff for API rate limits
-- **Files**: Create `ghlicense/utils/retry.py`, update providers
-- **Expected Outcome**: All API calls retry on rate limit with backoff (1s, 2s, 4s, 8s...)
-- **Verification**: Test with rate limit simulation
-
-### Wave 2: Cleanup (Optional)
+- **Status**: ✅ COMPLETED (commit a030c29)
+- **Files Created**: `ghlicense/utils/retry.py`, `ghlicense/utils/__init__.py`, `tests/test_retry.py`
+- **Files Updated**: `ghlicense/providers/github.py`, `ghlicense/providers/gitlab.py`
+- **Test Results**: 115 tests passing, 7 skipped
+- **Features**:
+  - Exponential backoff: 1s, 2s, 4s, 8s, 16s (max 5 retries)
+  - Handles HTTP 429 and rate limit errors
+  - Respects Retry-After header
+  - Async-aware with asyncio.sleep
+  - Comprehensive logging
 
 #### Task 3: Remove Bitbucket Support (Issue #41)
-- **Description**: Remove bitbucket-api support as requested in issue #41
-- **Files**: Remove `ghlicense/providers/bitbucket.py`, update registration
-- **Expected Outcome**: Bitbucket provider removed from codebase
-- **Verification**: `ghlicense/providers/bitbucket.py` deleted, no Bitbucket references
+- **Status**: ✅ COMPLETED (commit e218e6b)
+- **Verification**: `ghlicense/providers/bitbucket.py` deleted from git history
+
+### Note on Issue #59
+Issue #59 (Search Other Branches) is effectively resolved:
+- GitHub provider already uses `g_repo.default_branch` from GitHub API
+- Bitbucket provider was removed entirely (Issue #41)
+- No hardcoded branch names remain in the codebase
 
 ## Guardrails
 - Maintain backward compatibility with CLI interface
