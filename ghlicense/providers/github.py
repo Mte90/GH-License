@@ -31,9 +31,9 @@ class GitHubProvider(repobase.Provider):
         self.user = self.github.get_user(username)
 
     def get_repos(self):
-        """Wrapper around github.get_repos()."""
-        # Obtain a list of github repos of the user
-        g_repos = self.user.get_repos()
+        """Wrapper around github.get_repos() - only source repositories by default."""
+        # Obtain a list of github repos of the user (type=source excludes forks)
+        g_repos = self.user.get_repos(type="source")
         repos = []
 
         # Iterate over the list of "github repos" and

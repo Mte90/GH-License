@@ -34,7 +34,7 @@ PARSER.add_argument("--license", help="Download a license file, arguments: [Lice
 PARSER.add_argument("--licenselist", "--license-list", help="Show licenses available", action="store_true")
 PARSER.add_argument(
     "--provider",
-    help=f"Repository provider. Defaults to github. Available providers: {ENABLED_PROVIDERS} {ERR_PROVIDERS_TXT}",
+    help="Repository provider. Defaults to github. Available providers: github, gitlab",
     action="store",
     default="github",
 )

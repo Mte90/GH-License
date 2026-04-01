@@ -31,14 +31,17 @@ class GitLabProvider(repobase.Provider):
         self.user = self.gitlab.users.list(username=username)[0]
 
     def get_repos(self):
-        """Wrapper around gitlab.get_repos()."""
-        # Obtain a list of gitlab repos of the user
-        g_repos = self.user.projects.list()
+        """Wrapper around gitlab.get_repos() - only source repositories by default."""
+        # Obtain a list of gitlab repos of the user (owned=True to get user's projects)
+        g_repos = self.user.projects.list(owned=True, include_subgroups=False)
         repos = []
 
         # Iterate over the list of "gitlab repos" and
         # prepare a list of "repos" with properties of interest initialised.
         for g_repo in g_repos:
+            # Skip forks (marked as forked_project in GitLab)
+            if hasattr(g_repo, 'forked_project') and g_repo.forked_project:
+                continue
             raw_base_url = 'https://gitlab.com/' + g_repo.path_with_namespace + '/blob/' + g_repo.default_branch + '/'
             repo_url = 'https://gitlab.com/' + g_repo.path_with_namespace
             repos.append(repobase.Repo(g_repo.path_with_namespace, raw_base_url, repo_url,
